@@ -245,7 +245,7 @@ class SHYP():
                     self.article_comment_task(article_id)
                     time.sleep(random.randint(20, 40))
                 else:
-                    print("未开启自动评论, 如要开启，请更改环境变量配置")
+                    print("⛔️未开启自动评论, 如要开启，请更改环境变量配置")
                     time.sleep(random.randint(10, 25))
                 self.article_favor_task(article_id)
                 time.sleep(random.randint(10, 20))

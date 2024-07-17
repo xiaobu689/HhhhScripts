@@ -2,7 +2,7 @@
  * IQOO社区
 
  * 变量名: IQOO
- * cron: 19 9 * * *
+ * cron: 19 9,15 * * *
  * const $ = new Env("IQOO社区");
  */
 
@@ -187,7 +187,7 @@ async function main() {
         console.log("查询酷币")
         let user = await commonGet(`/v3/user?userId=${id}`, getSign('GET', '/api/v3/user', { "userId": id }));
         console.log(`拥有酷币: ${user.Data.score}\n`)
-        notice += `用户：${id} 拥有酷币: ${user.Data.score}\n`
+        notice += `用户：${id} | 手机: ${user.Data.mobile} | 拥有酷币: ${user.Data.score}\n`
     }
     if (notice) {
         $.msg($.name, '', notice);

@@ -3,7 +3,7 @@
 
  * 变量名: WangChao
  * 变量格式：账号1#密码1&账号2#密码2
- * cron: 32 7 * * *
+ * cron: 10 9 * * *
  * const $ = new Env("望潮");
  * 
  */
@@ -131,7 +131,6 @@ async function main() {
         console.log('获取登录cookie')
         console.log(readCookie)
         let readList = await readGet(`/prod-api/user-read/list/${getCurrentDate()}`)
-        console.log("----666666list=", readList)
 
         if (readList.data.completedCount == readList.data.sum) {
             console.log('阅读已经完成')
@@ -147,20 +146,20 @@ async function main() {
             }
         }
         let lotteryCount = await readGet(`/prod-api/user-read-count/count/${getCurrentDate()}`);
-        console.log("--------555555抽奖次数=", lotteryCount)
         lotteryCookie = ''
         lotteryCookie = await lotteryLoginGet(`/tzrb/user/loginWC?accountId=${accountId}&sessionId=${sessionId}`)
         console.log('获取抽奖cookie')
         console.log(lotteryCookie)
         let priceList = await lotteryGet('/tzrb/awardUpgrade/list?activityId=67');
-        console.log("---111111111=", priceList)
         let priceArr = priceList.data;
-        console.log("---2222222=", priceArr)
         for (let i = 0; i < lotteryCount.data; i++) {
             let lottery = await lotteryPost(`/tzrb/userAwardRecordUpgrade/saveUpdate`, 'activityId=67&sessionId=undefined&sig=undefined&token=undefined')
-            console.log("-----33333=", lottery)
+            // lottery { code: 200, data: 442, message: '操作成功' }
+            if (lottery.code !== 200) {
+                console.log(`抽奖失败 | ${lottery.message}`)
+                continue;
+            }
             const index = priceArr.findIndex(e => e.id == lottery.data);
-            console.log("----44444=", index)
             console.log(`抽奖获得：${priceArr[index].title}`)
         }
         console.log("————————————")
