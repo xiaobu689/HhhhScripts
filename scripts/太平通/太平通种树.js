@@ -73,7 +73,7 @@ async function main() {
         while (sy_water > 0) {
             console.log(`剩余水滴：${sy_water}`)
             let water = await commonPost('/tree/watering', { "tree_user_id": home.data.tree_user.id });
-            //console.log(water)
+            //console.frida_log(water)
             if (water.code == 400) {
                 console.log(water.msg)
                 break;
@@ -84,7 +84,7 @@ async function main() {
                 console.log(`升级获得：水*${upgrade.data.water} 爱心值*${upgrade.data.balance}`)
                 sy_water = upgrade.data.sy_water;
                 let openBox = await commonPost('/user/open-welfare_box', { "w_id": upgrade.data.w_id });
-                // console.log(openBox)
+                // console.frida_log(openBox)
                 if (openBox.data.reward_type == 1) {
                     console.log(`开宝箱获得：水*${openBox.data.water}`)
                     sy_water = upgrade.data.sy_water;

@@ -3,11 +3,6 @@
 
  * 打开APP抓包，抓请求头 cookie里的yx_userid， cookie, url里的csrf_token
  * 变量名: WYYX
- * 变量格式：
- *     {
- *         memberId: '骑狗跨大海',
- *         token: 'WX_MP:o2Pmw5bD-of8g_EOb1zPoLl9cd4g'
- *     }
  * 多账号用续写
 
  * cron: 42 8 * * *
@@ -38,11 +33,11 @@ async function main() {
         let sign = await weChatGet(`/act-attendance/att/v3/sign?csrf_token=${token}&__timestamp=${new Date().getTime()}&`);
         console.log(sign.msg)
         if (sign.code == 401) {
-            saveResultToFile("error", self.name)
+            saveResultToFile("error", name)
             $.msg($.name, `用户：${userId}`, `cookie已过期，请重新获取`);
             continue
         } else {
-            saveResultToFile("success", self.name)
+            saveResultToFile("success", name)
         }
         //app任务
         console.log("————————————")

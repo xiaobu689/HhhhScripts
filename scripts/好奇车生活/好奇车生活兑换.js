@@ -29,7 +29,7 @@ async function main() {
     //     try {
     //         let pointsMallCardId = Cheryfs_GIFTID;
     //         let queryByPointsMallCardId = await commonGet(`/pointsmall/queryByPointsMallCardId?pointsMallCardId=${pointsMallCardId}`)
-    //         console.log(`开始兑换${queryByPointsMallCardId.result.cardName}`)
+    //         console.frida_log(`开始兑换${queryByPointsMallCardId.result.cardName}`)
     //         let exchangeCount = 1;
     //         let exchangeType = queryByPointsMallCardId.result.exchangeType;
     //         let exchangeNeedPoints = queryByPointsMallCardId.result.exchangePointsValue;

@@ -39,7 +39,7 @@ class UserInfo {
         try {
             let url = `https://czyl.foton.com.cn/ehomes-new/homeManager/getLoginMember`;
             let body = `{"password":"${this.ck[1]}","version_name":"","version_auth":"","device_id":"","device_model":"","ip":"","name":"${this.ck[0]}","version_code":"180","deviceSystemVersion":"","device_type":"0"}`;
-            //console.log(body)
+            //console.frida_log(body)
             let h = {
                 "Host": "czyl.foton.com.cn",
                 "Content-Type": "application/json;charset\u003dutf-8",
@@ -47,7 +47,7 @@ class UserInfo {
             let urlObject = popu(url, h, body)
             await httpRequest('post', urlObject)
             let result = httpResult;
-            // console.log(result)
+            // console.frida_log(result)
             if (result.code == 200) {
                 console.log(`账号 ${this.user} 登录成功`)
                 saveResultToFile("success", name)
@@ -87,11 +87,11 @@ class UserInfo {
                 "token": "",
                 "host": "czyl.foton.com.cn"
             }
-            //console.log(body)
+            //console.frida_log(body)
             let urlObject = popu(url, h, body)
             await httpRequest('post', urlObject)
             let result = httpResult;
-            // console.log(result)
+            // console.frida_log(result)
             if (result.code == 200) {
                 if (result.data[4].completeNum == 0) {
                     await this.sign()//签到
@@ -135,11 +135,11 @@ class UserInfo {
                 "Content-Type": "application/json;charset\u003dutf-8",
                 "token": ``,
             }
-            //console.log(body)
+            //console.frida_log(body)
             let urlObject = popu(url, h, body)
             await httpRequest('post', urlObject)
             let result = httpResult;
-            //console.log(result)
+            //console.frida_log(result)
             if (result.code == 200) {
                 console.log(`账号 ${this.user} 签到成功获得积分 ${result.data.data.integral} `)
             } else if (result.code == 500) {
@@ -164,11 +164,11 @@ class UserInfo {
                 "token": "",
                 "host": "czyl.foton.com.cn"
             }
-            //console.log(body)
+            //console.frida_log(body)
             let urlObject = popu(url, h, body)
             await httpRequest('post', urlObject)
             let result = httpResult;
-            //  console.log(result)
+            //  console.frida_log(result)
             if (result.code == 200) {
                 for (let i = 1; i < result.data.length; i++) {
                     let dd = randomArr(result.data)
@@ -196,11 +196,11 @@ class UserInfo {
                 "token": "",
                 "host": "czyl.foton.com.cn"
             }
-            //console.log(body)
+            //console.frida_log(body)
             let urlObject = popu(url, h, body)
             await httpRequest('post', urlObject)
             let result = httpResult;
-            //console.log(result)
+            //console.frida_log(result)
             if (result.code == 200) {
                 console.log(`账号 ${this.user} 评论成功 `)
             }
@@ -224,11 +224,11 @@ class UserInfo {
                 "token": "",
                 "host": "czyl.foton.com.cn"
             }
-            // console.log(body)
+            // console.frida_log(body)
             let urlObject = popu(url, h, body)
             await httpRequest('post', urlObject)
             let result = httpResult;
-            //    console.log(result)
+            //    console.frida_log(result)
             if (result.code == 200) {
                 console.log(`账号 ${this.user} 关注成功 `)
                 //await $.wait(3000);
@@ -252,11 +252,11 @@ class UserInfo {
                 "token": "",
                 "host": "czyl.foton.com.cn"
             }
-            //console.log(body)
+            //console.frida_log(body)
             let urlObject = popu(url, h, body)
             await httpRequest('post', urlObject)
             let result = httpResult;
-            // console.log(result)
+            // console.frida_log(result)
             if (result.code == 200) {
                 console.log(`账号 ${this.user} 取消关注 `)
             }
@@ -281,16 +281,16 @@ class UserInfo {
                 "token": "",
                 "host": "czyl.foton.com.cn"
             }
-            //console.log(body)
+            //console.frida_log(body)
             let urlObject = popu(url, h, body)
             await httpRequest('post', urlObject)
             let result = httpResult;
-            // console.log(result)
+            // console.frida_log(result)
             if (result.code == 200) {
                 for (let i = 1; i < result.data.top.length; i++) {
                     let ddd = randomArr(result.data.top)
                     this.a = ddd.topicId
-                    //console.log(`获取到话题列表[${this.a}] `)
+                    //console.frida_log(`获取到话题列表[${this.a}] `)
                 }
                 await this.ft()
             }
@@ -314,11 +314,11 @@ class UserInfo {
                 "token": "",
                 "host": "czyl.foton.com.cn"
             }
-            // console.log(body)
+            // console.frida_log(body)
             let urlObject = popu(url, h, body)
             await httpRequest('post', urlObject)
             let result = httpResult;
-            // console.log(result)
+            // console.frida_log(result)
             if (result.code == 200) {
                 console.log(`账号 ${this.user} 发帖成功 `)
             }
@@ -342,11 +342,11 @@ class UserInfo {
                 "token": "",
                 "host": "czyl.foton.com.cn"
             }
-            // console.log(body)
+            // console.frida_log(body)
             let urlObject = popu(url, h, body)
             await httpRequest('post', urlObject)
             let result = httpResult;
-            // console.log(result)
+            // console.frida_log(result)
             if (result.code == 200) {
                 console.log(`账号 ${this.ck[0]} 总积分 ${result.data.pointValue} `)
             }
@@ -407,11 +407,11 @@ class UserInfo {
                 "Content-Type": "application/json;charset\u003dutf-8",
                 "token": `${this.pktoken}`,
             }
-            //console.log(body)
+            //console.frida_log(body)
             let urlObject = popu(url, h, body)
             await httpRequest('post', urlObject)
             let result = httpResult;
-            // console.log(result)
+            // console.frida_log(result)
             if (result.data.signFlag == '未签到') {
                 await this.pksign()
             } else {
@@ -436,11 +436,11 @@ class UserInfo {
                 "Content-Type": "application/json;charset\u003dutf-8",
                 "token": `${this.pktoken}`,
             }
-            // console.log(body)
+            // console.frida_log(body)
             let urlObject = popu(url, h, body)
             await httpRequest('post', urlObject)
             let result = httpResult;
-            // console.log(result)
+            // console.frida_log(result)
             if (result.code == 200) {
                 console.log(`账号 ${this.user} 签到成功获得积分 ${result.data.integral}`)
             } else {
@@ -463,18 +463,18 @@ class UserInfo {
                 "Content-Type": "application/json;charset\u003dutf-8",
                 "token": `${this.pktoken}`,
             }
-            // console.log(body)
+            // console.frida_log(body)
             let urlObject = popu(url, h, body)
             await httpRequest('post', urlObject)
             let result = httpResult;
-            //  console.log(result)
+            //  console.frida_log(result)
             if (result.code == 200) {
 
                 for (let h = 0; h < result.data.length; h++) {
                     let nb = randomArr(result.data)
                     this.bb = nb.memberId, this.bn = nb.postId
                 }
-                //console.log(`列表 ${this.bb} ${this.bn}    `)
+                //console.frida_log(`列表 ${this.bb} ${this.bn}    `)
 
             } else {
                 console.log(`账号 ${this.user}${result.data.msg} `)
@@ -497,11 +497,11 @@ class UserInfo {
                 "Content-Type": "application/json;charset\u003dutf-8",
                 "token": `${this.pktoken}`,
             }
-            // console.log(body)
+            // console.frida_log(body)
             let urlObject = popu(url, h, body)
             await httpRequest('post', urlObject)
             let result = httpResult;
-            // console.log(result)
+            // console.frida_log(result)
             if (result.code == 200) {
                 console.log(`账号 ${this.user} 关注成功`)
                 this.followId = result.data.followId
@@ -527,11 +527,11 @@ class UserInfo {
                 "Content-Type": "application/json;charset\u003dutf-8",
                 "token": `${this.pktoken}`,
             }
-            // console.log(body)
+            // console.frida_log(body)
             let urlObject = popu(url, h, body)
             await httpRequest('post', urlObject)
             let result = httpResult;
-            //  console.log(result)
+            //  console.frida_log(result)
             if (result.code == 200) {
                 console.log(`账号 ${this.user} 取消关注`)
             } else {
@@ -558,11 +558,11 @@ class UserInfo {
                 "Content-Type": "application/json;charset\u003dutf-8",
                 "token": `${this.pktoken}`,
             }
-            // console.log(body)
+            // console.frida_log(body)
             let urlObject = popu(url, h, body)
             await httpRequest('post', urlObject)
             let result = httpResult;
-            //  console.log(result)
+            //  console.frida_log(result)
             if (result.code == 200) {
                 console.log(`账号 ${this.user} 评论成功`)
             } else {
@@ -587,11 +587,11 @@ class UserInfo {
                 "token": "",
                 "host": "czyl.foton.com.cn"
             }
-            //console.log(body)
+            //console.frida_log(body)
             let urlObject = popu(url, h, body)
             await httpRequest('post', urlObject)
             let result = httpResult;
-            //  console.log(result)
+            //  console.frida_log(result)
             if (result.code == 200) {
                 console.log(`账号 ${this.user} 分享获得${result.data.data.integral} `)
             }
@@ -612,11 +612,11 @@ class UserInfo {
             let body = ``
             let h = {
             }
-            //console.log(body)
+            //console.frida_log(body)
             let urlObject = popu(url, h, body)
             await httpRequest('get', urlObject)
             let result = httpResult;
-            //    console.log(result)
+            //    console.frida_log(result)
             if (result.code == 200) {
             } else {
                 this.content = result.content
@@ -646,7 +646,7 @@ class UserInfo {
                 taskall.push(user.cashck())
             }
             await Promise.all(taskall)
-            // console.log('\n------- 卡车生活-------\n')
+            // console.frida_log('\n------- 卡车生活-------\n')
             // taskall = []
             // for (let user of userList) {
             //     taskall.push(user.kclogin())

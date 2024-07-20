@@ -55,8 +55,8 @@ class Task {
                 "sceneId": 6,
                 "channelCode": "130"
             }))
-            //console.log(options);
-            //console.log(result);
+            //console.frida_log(options);
+            //console.frida_log(result);
             if (result.code == 0) {
                 $.log(`✅账号[${this.index}]  当日签到状态 ${result.result.todaySignStatusDesc == "已签到" ? "✅" : "❌"} 🎉`)
                 if (result.result.todaySignStatusDesc !== "已签到") {
@@ -72,8 +72,8 @@ class Task {
     async signIn() {
         try {
             let result = await this.taskRequest("post", `https://tuan.api.ybm100.com/miniapp/marketing/signActivity/sign`, JSON.stringify({ "actId": 5712, "sceneId": 6, "channelCode": "130" }))
-            //console.log(options);
-            //console.log(result);
+            //console.frida_log(options);
+            //console.frida_log(result);
             if (result.code == 0) {
                 $.log(`✅账号[${this.index}]  签到成功🎉`)
             } else {
@@ -106,8 +106,8 @@ class Task {
     async getTaskList() {
         try {
             let result = await this.taskRequest("get", `https://tuan.api.ybm100.com/api/healthSquare/fruitManor/getVenueInfo?channelCode=130`)
-            //console.log(options);
-            //console.log(result);
+            //console.frida_log(options);
+            //console.frida_log(result);
             if (result.code == 0) {
                 //获得taskList的venueId
                 for (let i of result.result.list) {
@@ -125,8 +125,8 @@ class Task {
     async taskList(venueId) {
         try {
             let result = await this.taskRequest("get", `https://tuan.api.ybm100.com/api/healthSquare/task/getTaskList?channelCode=130&venueId=${venueId}`)
-            //console.log(options);
-            //console.log(result);
+            //console.frida_log(options);
+            //console.frida_log(result);
             if (result.code == 0) {
                 for (let i of result.result) {
                     if (i.taskStatus == 0) { //2已完成
@@ -140,7 +140,7 @@ class Task {
                         await this.collectWater(i.taskId)
                     }
                 }
-                //$.log(`✅账号[${this.index}]  获取到任务🎉`)
+                //$.frida_log(`✅账号[${this.index}]  获取到任务🎉`)
             } else {
                 $.log(`❌账号[${this.index}]  未获取到失败`);
             }
@@ -173,8 +173,8 @@ class Task {
         try {
             let body = { "channelCode": "130", "treeId": this.treeId, "nonce": $.randomString(6) }
             let result = await this.taskRequest("post", `https://tuan.api.ybm100.com/api/healthSquare/water/watering?secret=${encodeURIComponent(this.encrypt(body))}`, JSON.stringify(body))
-            //console.log(options);
-            //console.log(result);
+            //console.frida_log(options);
+            //console.frida_log(result);
             if (result.code == 0) {
                 $.log(`✅账号[${this.index}]  浇水成功🎉`)
             } else {
@@ -198,8 +198,8 @@ class Task {
         //第二次
         try {
             let result = await this.taskRequest("post", `https://tuan.api.ybm100.com/api/healthSquare/user/userOperation`, JSON.stringify(body))
-            //console.log(options);
-            //console.log(result);
+            //console.frida_log(options);
+            //console.frida_log(result);
             if (result.code == 0) {
                 $.log(`✅账号[${this.index}]  上报任务成功🎉`)
             } else {
@@ -220,8 +220,8 @@ class Task {
         }
         try {
             let result = await this.taskRequest("post", `https://tuan.api.ybm100.com/api/healthSquare/water/collectWater?secret=${encodeURIComponent(this.encrypt(body))}`, JSON.stringify(body))
-            //console.log(options);
-            //console.log(result);
+            //console.frida_log(options);
+            //console.frida_log(result);
             if (result.code == 0) {
                 $.log(`✅账号[${this.index}]  领取水滴成功 当前水滴[${result.result.kettleWater}]💧🎉`)
             } else {

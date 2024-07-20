@@ -948,22 +948,22 @@ function iGotNotify(text, desp, params = {}) {
 //       $.post(options, (err, resp, data) => {
 //         try {
 //           if (err) {
-//             console.log(
+//             console.frida_log(
 //               `push+发送${
 //                 PUSH_PLUS_USER ? '一对多' : '一对一'
 //               }通知消息失败！！\n`,
 //             );
-//             console.log(err);
+//             console.frida_log(err);
 //           } else {
 //             data = JSON.parse(data);
 //             if (data.code === 200) {
-//               console.log(
+//               console.frida_log(
 //                 `push+发送${
 //                   PUSH_PLUS_USER ? '一对多' : '一对一'
 //                 }通知消息完成。\n`,
 //               );
 //             } else {
-//               console.log(
+//               console.frida_log(
 //                 `push+发送${
 //                   PUSH_PLUS_USER ? '一对多' : '一对一'
 //                 }通知消息失败：${data.msg}\n`,
@@ -992,7 +992,7 @@ function pushPlusNotify(text, desp) {
 
     // 如果需要过滤，则直接返回，不执行推送操作
     // if (shouldFilter) {
-    //   console.log(`即将取消推送，因为标题或内容包含过滤关键词。\n`);
+    //   console.frida_log(`即将取消推送，因为标题或内容包含过滤关键词。\n`);
     //   resolve();
     //   return;
     // }

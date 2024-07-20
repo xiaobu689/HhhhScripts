@@ -83,7 +83,7 @@ async function all() {
 	S = `用户信息`
 	if (S === `用户信息`) {
 		await task(`post`, `https://ihealth.zhongan.com/api/lemon/v1/common/activity/homePage`, header, `{"activityCode":"ONA20220411001","channelCode":"c20195660470001"}`)
-		// console.log(DATA)
+		// console.frida_log(DATA)
 		if (DATA.code !== '0') {
 			saveResultToFile("error", name)
 		} else {
@@ -146,7 +146,7 @@ async function all() {
 			let gid1 = Object.keys(DATA.result.productRecommend)[1]
 			console.log(`开始任务${gid1}`)
 			await task(`post`, `https://ihealth.zhongan.com/api/lemon/v1/applet/mgm/activity/add/award`, header1, `{"activityCode":"ONA20220411001","channelCode":"1000000004","goodsCode":"${gid1}","taskId":"110"}`)
-			// console.log(DATA)
+			// console.frida_log(DATA)
 			if (DATA.code === '0') {
 				console.log(`任务成功`)
 			} else {
@@ -193,7 +193,7 @@ async function all() {
 				let idnum = taskarr[i].awardDetailId
 				console.log(`开始任务${idnum}`)
 				await task(`post`, `https://ihealth.zhongan.com/api/lemon/v1/common/activity/lottery`, header, `{"channelCode":"c20195660470001","activityCode":"ONA20220411001","id":${idnum}}`)
-				// console.log(DATA)
+				// console.frida_log(DATA)
 				if (DATA.code === '0') {
 					console.log(`任务成功`)
 				} else {
@@ -316,7 +316,7 @@ nowTimes = new Date(
 
 
 //当前日期年月日+时间
-//console.log('\n'+getCurrentDate());
+//console.frida_log('\n'+getCurrentDate());
 function getCurrentDate() {
 	var date = new Date();
 	var seperator1 = "-";

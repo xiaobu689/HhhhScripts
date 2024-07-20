@@ -1,13 +1,13 @@
 """
 随申行
 
-
 路径：随申行APP
 用途：签到、做任务、养宠物攒兜豆，兑换上海地铁优惠券
 变量名：SSX_COOKIE
 格式： 任意请求头抓 Authorization 值
 
 ---------------------------------
+20240717 增加自动领养宠物
 20240610 新增每日签到、浏览商场任务
 20240601 抽奖活动下线移除
 20240529 新增当日首次登陆、游戏成就分享
@@ -126,29 +126,9 @@ class SSX():
             msg += f'❌领取失败， cookie可能已失效：{response["errMsg"]}\n'
             print(msg)
 
-    def task_list(self):
-        url = 'https://api.shmaas.net/cap/app/queryLowCarbonHome'
-        data = {"language": "zh-cn"}
-        response = requests.post(url, headers=self.headers, json=data).json()
-        if response['errCode'] == 0:
-            # 获取正在喂养的宠物ID, adoptionValue: 1喂养完成 2喂养中
-            for i in response['data']['userGames']:
-                if i["adoptionValue"] == 2:
-                    self.adoptingName = i["gameName"]
-                    break
-            msg = f'\n---------- 🐹任务列表🐹 ----------\n'
-            for i in response['data']['userActivityMessages']:
-                if "用户注册" in i["name"] or "用户实名" in i["name"] or "用户首单" in i["name"] or "打车出行" in i[
-                    "name"]:
-                    continue
-                msg += f'✅{i["name"]}: {"已完成" if i["finishStatus"] == 1 else "未完成"}\n'
-        else:
-            msg = f'❌获取任务列表信息失败， cookie可能失效：{response["errMsg"]}'
-
-        self.msg += msg
-        print(msg)
 
     def user_game_list(self):
+        gameName = ''
         json_data = {
             'language': 'zh-cn',
         }
@@ -158,6 +138,11 @@ class SSX():
             for i in response['data']['gameCardInfo']:
                 if i["type"] == 2:  # type 2喂养中
                     self.adoptingId = i["gameId"]
+                    if i["gameId"] == '998':
+                        gameName = '和平鸽'
+                    elif i["gameId"] == '999':
+                        gameName = '白玉兰'
+                    self.adoptingName = gameName
                     break
 
     def get_game_info(self):
@@ -165,13 +150,35 @@ class SSX():
         url = 'https://api.shmaas.net/cap/base/credits/queryNowAdoptInfo'
         data = {"language": "zh-cn"}
         response = requests.post(url, headers=self.headers, json=data).json()
-        msg = f'\n-----------------------------------\n'
         msg += f'✅领养物: {self.adoptingName}\n'
         msg += f'✅当前等级：{response["data"]["feedUserGameNew"]["level"]}\n'
         msg += f'✅喂养进度：{response["data"]["feedUserGameNew"]["nowScore"]}/{response["data"]["feedUserGameNew"]["needScore"]}\n'
 
         self.msg += msg
         print(msg)
+
+    # 领养宠物
+    def adopt(self):
+        gameIds = ['998', '999']
+        gameName = ''
+        gameId = random.choice(gameIds)
+        if gameId == '998':
+            gameName = '和平鸽'
+        elif gameId == '999':
+            gameName = '白玉兰'
+        json_data = {
+            'language': 'zh-cn',
+            'gameId': gameId,
+        }
+        url = 'https://api.shmaas.net/cap/base/credits/v2/adoptUserGame'
+        response = requests.post(url, headers=self.headers, json=json_data)
+        response_json = response.json()
+        if response_json['errCode'] == 0:
+            msg = f'✅领养成功！| 拿下: {gameName}'
+            print(msg)
+        else:
+            msg = f'❌领养失败，{response_json["errMsg"]}'
+            print(msg)
 
     def feed(self):
         msg = '✅开始喂养......\n'
@@ -181,9 +188,16 @@ class SSX():
             'gameId': self.adoptingId
         }
         response = requests.post(url, headers=self.headers, json=data).json()
+        print(response)
+        now_score = response["data"]["feedUserGameNew"]["nowScore"]
+        need_score = response["data"]["feedUserGameNew"]["needScore"]
         msg = f'-----------------------------------\n'
         if response['errCode'] == 0:
-            msg += f'✅喂养成功，更新等级进度：{response["data"]["feedUserGameNew"]["nowScore"]}/{response["data"]["feedUserGameNew"]["needScore"]}\n'
+            msg += f'✅喂养成功，更新等级进度：{now_score-10}/{need_score}===》{now_score}/{need_score}\n'
+            # 判断当前宠物完成状态(不确定喂成后是100还是清零，先这么判断吧)
+            if now_score == 100:
+                print("✅喂养完成，开始领养新的宠物")
+                self.adopt()
         elif response['errCode'] == -2763250:
             msg += f'✅今天已经喂养过了，明天再来吧!\n'
         else:
@@ -306,7 +320,7 @@ class SSX():
         if response and response.status_code == 200:
             response_json = response.json()
             if response_json['errCode'] == 0:
-                msg = f'✅今日首次登录成功'
+                msg = f'✅登录成功'
             else:
                 msg = f'❌今日首次登录失败，{response_json["errMsg"]}'
         else:
@@ -404,19 +418,20 @@ class SSX():
 
     def main(self):
         title = "随申行"
-
         self.getUserInfo()
-        self.task_list()
 
         self.today_first_login()
         time.sleep(random.randint(7, 15))
 
+        self.ssx_sign()
+        time.sleep(random.randint(5, 10))
+
+        print(f"======== ▷ 宠物喂养 ◁ ========")
         self.user_game_list()
         self.get_game_info()
         time.sleep(random.randint(7, 15))
-
         self.feed()
-        time.sleep(random.randint(10, 20))
+        time.sleep(random.randint(5, 10))
 
         self.query_address()
         self.finish_query_address()
@@ -425,14 +440,10 @@ class SSX():
         self.game_share()
         time.sleep(random.randint(5, 15))
 
-        self.ssx_sign()
-        time.sleep(random.randint(5, 10))
-
         # self.query_mall()
         # time.sleep(random.randint(15, 20))
 
         self.receive()
-        self.task_list()
         time.sleep(random.randint(5, 10))
 
         self.xl_subway_ticket_list()

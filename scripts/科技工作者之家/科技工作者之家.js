@@ -165,9 +165,9 @@ async function share() {
 	let encry_str = 'channel=baidu&content_id=' + ctid + '&content_type=1&device_model=MIX2&from=android&path=/share/statistic&sdk_int=28&share_source=&system_version=android9&timestamp=' + t + '&token=' + _token + '&tourist_token=' + uid + '&uuid=' + uid + '&v=5.5.1&secretkey=LH6064#!@&YTM';
 	let snstr = sm3(encry_str);
 	let str = 'https://api-kejia.scimall.org.cn/share/statistic?timestamp=' + t + '&v=5.5.1&from=android&device_model=MIX2&channel=baidu&system_version=android9&sdk_int=28' + '&uuid=' + uid + '&tourist_token=' + uid + '&token=' + _token + '&sn=' + snstr;
-	//console.log("加密段   "+encry_str);
-	//console.log("sn    "+snstr);
-	//console.log("地址     :"+str);
+	//console.frida_log("加密段   "+encry_str);
+	//console.frida_log("sn    "+snstr);
+	//console.frida_log("地址     :"+str);
 
 	try {
 		let pack = {
@@ -186,7 +186,7 @@ async function share() {
 
 		let result = await httpPost(pack, `分享`);
 
-		//console.log(result);
+		//console.frida_log(result);
 		if (result.code == 0) {
 			DoubleLog(result.data.msg);
 			await wait(3);
@@ -231,7 +231,7 @@ async function login() {
 		let result = await httpPost(pack, `登录`);
 		_token = result.data.token;
 
-		//console.log(result.data.token);
+		//console.frida_log(result.data.token);
 		if (result.code == 0) {
 			DoubleLog('登录' + result.msg);
 			await wait(3);
@@ -311,7 +311,7 @@ async function SignIn() {
 		};
 		let result = await httpPost(pack, `签到`);
 
-		// console.log(result);
+		// console.frida_log(result);
 		if (result.code == 0) {
 			DoubleLog('签到成功,获得积分' + result.data.point);
 			await wait(3);
@@ -322,7 +322,7 @@ async function SignIn() {
 		}
 		else {
 			// DoubleLog(`查询: 失败 ❌ 了呢,原因未知!`);
-			// console.log(result);
+			// console.frida_log(result);
 		}
 	} catch (error) {
 		console.log(error);
@@ -357,7 +357,7 @@ async function lookVideo() {
 		};
 		let result = await httpPost(pack, `看视频`);
 
-		//console.log(result);
+		//console.frida_log(result);
 		if (result.code == 0) {
 			DoubleLog('看视频成功,获得积分' + result.data.msg);
 			await wait(3);
@@ -389,9 +389,9 @@ async function PublishTitle() {
 	let encry_str = 'channel=baidu&content=' + poemtxt[_poem] + '&device_model=MIX2&from=android&groupId=' + mygroupId + '&path=/weibo/issueWeibo&repostId=0&sdk_int=28&sourceId=0&sourceType=weibo&system_version=android9&timestamp=' + t + '&title=' + '&token=' + _token + '&tourist_token=' + uid + "&type=3" + '&uuid=' + uid + '&v=5.5.1&secretkey=LH6064#!@&YTM';
 	let snstr = sm3(encry_str);
 	let str = 'https://api-kejia.scimall.org.cn/weibo/issueWeibo?timestamp=' + t + '&v=5.5.1&from=android&device_model=MIX2&channel=baidu&system_version=android9&sdk_int=28' + '&uuid=' + uid + '&tourist_token=' + uid + '&token=' + _token + '&sn=' + snstr;
-	//console.log("发动态加密段   "+encry_str);
-	//console.log("发动态sn    "+snstr);
-	//console.log("发动态     :"+str);
+	//console.frida_log("发动态加密段   "+encry_str);
+	//console.frida_log("发动态sn    "+snstr);
+	//console.frida_log("发动态     :"+str);
 	try {
 		let pack = {
 			url: str,
@@ -408,7 +408,7 @@ async function PublishTitle() {
 		};
 		let result = await httpPost(pack, `发动态`);
 
-		// console.log(result);
+		// console.frida_log(result);
 		if (result.code == 0) {
 			DoubleLog(result.data.msg);
 			await wait(3);
@@ -456,7 +456,7 @@ async function DiscussTitle(id) {
 		};
 		let result = await httpPost(pack, `发评论`);
 
-		// console.log(result);
+		// console.frida_log(result);
 		if (result.code == 0) {
 			DoubleLog(result.data.msg);
 			await wait(3);
@@ -504,7 +504,7 @@ async function DelTitle() {
 		};
 		let result = await httpPost(pack, `删动态`);
 
-		//console.log(result);
+		//console.frida_log(result);
 		if (result.code == 0) {
 			DoubleLog('删动态' + result.msg);
 			await wait(3);
@@ -516,7 +516,7 @@ async function DelTitle() {
 		//}
 		else {
 			DoubleLog('删动态错误，原因未知');
-			//console.log(result);
+			//console.frida_log(result);
 		}
 	} catch (error) {
 		console.log(error);
@@ -531,9 +531,9 @@ async function GetTitleID() {
 	let encry_str = 'channel=baidu&device_model=MIX2&from=android&path=/weibo/getMyWeibolist&sdk_int=28&system_version=android9&timestamp=' + t + '&token=' + _token + '&tourist_token=' + uid + '&uuid=' + uid + '&v=5.5.1&weiBoId=0&secretkey=LH6064#!@&YTM';
 	let snstr = sm3(encry_str);
 	let str = 'https://api-kejia.scimall.org.cn/weibo/getMyWeibolist?weiBoId=0&timestamp=' + t + '&v=5.5.1&from=android&device_model=MIX2&channel=baidu&system_version=android9&sdk_int=28' + '&uuid=' + uid + '&tourist_token=' + uid + '&token=' + _token + '&sn=' + snstr;
-	// console.log("登录加密段   "+encry_str);
-	//console.log("登录sn    "+snstr);
-	//console.log("登录地址     :"+str);
+	// console.frida_log("登录加密段   "+encry_str);
+	//console.frida_log("登录sn    "+snstr);
+	//console.frida_log("登录地址     :"+str);
 	try {
 		let pack = {
 			url: str,
@@ -569,9 +569,9 @@ async function Update_wallet() {
 	let encry_str = 'channel=baidu&device_model=MIX2&from=android&path=/point/exchangeRule&sdk_int=28&system_version=android9&timestamp=' + t + '&token=' + _token + '&tourist_token=' + uid + '&uuid=' + uid + '&v=5.5.1&secretkey=LH6064#!@&YTM';
 	let snstr = sm3(encry_str);
 	let str = 'https://api-kejia.scimall.org.cn/point/exchangeRule?timestamp=' + t + '&v=5.5.1&from=android&device_model=MIX2&channel=baidu&system_version=android9&sdk_int=28' + '&uuid=' + uid + '&tourist_token=' + uid + '&token=' + _token + '&sn=' + snstr;
-	// console.log("登录加密段   "+encry_str);
-	//console.log("登录sn    "+snstr);
-	//console.log("登录地址     :"+str);
+	// console.frida_log("登录加密段   "+encry_str);
+	//console.frida_log("登录sn    "+snstr);
+	//console.frida_log("登录地址     :"+str);
 	try {
 		let pack = {
 			url: str,
@@ -584,7 +584,7 @@ async function Update_wallet() {
 
 		};
 		let result = await httpGet(pack, `更新钱包额度`);
-		//console.log(result);
+		//console.frida_log(result);
 		if (result.code == 0) {
 			DoubleLog('额度为' + result.data.exchange_point);
 			DoubleLog('积分为' + result.data.current_point);
@@ -666,9 +666,9 @@ async function UpdateInfoFirst(j) {
 	else {
 		str = 'https://api-kejia.scimall.org.cn/banner/getBannerInfo?place=' + j + '&timestamp=' + t + '&v=5.5.1&from=android&device_model=MIX2&channel=baidu&system_version=android9&sdk_int=28' + '&uuid=' + uid + '&tourist_token=' + uid + '&token=' + _token + '&sn=' + snstr;
 	}
-	// console.log("登录加密段   "+encry_str);
-	//console.log("登录sn    "+snstr);
-	//console.log("登录地址     :"+str);
+	// console.frida_log("登录加密段   "+encry_str);
+	//console.frida_log("登录sn    "+snstr);
+	//console.frida_log("登录地址     :"+str);
 	try {
 		let pack = {
 			url: str,
@@ -750,7 +750,7 @@ async function ShareLuckyDraw() {
 
 		};
 		let result = await httpGet(pack, `分享抽奖`);
-		// console.log(result);
+		// console.frida_log(result);
 		if (result.code == 0) {
 			//_weiboid=result.data[0].id;
 			DoubleLog('分享' + result.msg);
@@ -987,7 +987,7 @@ function wyy() {
 		$.get(url, async (err, resp, data) => {
 			try {
 				data = JSON.parse(data);
-				// console.log(data);
+				// console.frida_log(data);
 				console.log(`网抑云时间: ${data.data.Content}  by--${data.data.Music}`)
 				msg = `[网抑云时间]: ${data.data.Content}  by--${data.data.Music}`
 				// DoubleLog(`[网抑云时间]: ${data.data.Content}  by--${data.data.Music}`);

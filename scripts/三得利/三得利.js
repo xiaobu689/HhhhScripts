@@ -7,15 +7,17 @@
  */
 const name = "三得利"
 const $ = new Env(name)
-const SDL = ($.isNode() ? JSON.parse(process.env.SDL) : $.getjson("SDL")) || [];
+// const SDL = ($.isNode() ? JSON.parse(process.env.SDL) : $.getjson("SDL")) || [];
+const SDL = [
+    {
+        "id": "骑狗跨大海",
+        "token": "bearer d87be91f-c346-46ed-85b0-bab5507b6c79"
+    }
+]
 let token = ''
 let notice = ''
 !(async () => {
-    if (typeof $request != "undefined") {
-        await getCookie();
-    } else {
-        await main();
-    }
+    await main();
 })().catch((e) => { $.log(e) }).finally(() => { $.done({}); });
 
 async function main() {
@@ -24,12 +26,17 @@ async function main() {
         token = item.token;
         console.log(`用户：${id}开始任务`)
         let user_info = await commonPost('/user/member/info', {})
-        if (user_info.code == "200") {
-            saveResultToFile("success", name)
-        } else {
+        if (user_info === undefined) {
+            console.log("❌获取用户信息失败，token已过期")
             saveResultToFile("error", name)
             continue
         }
+        if (user_info.code != "200") {
+            saveResultToFile("error", name)
+            console.log("❌获取用户信息失败，token已过期")
+            continue
+        }
+        saveResultToFile("success", name)
         console.log('开始签到')
         let sign = await commonPost('/coupon/auth/signIn', { "miniappId": 159 })
         if (sign.code == 200) {

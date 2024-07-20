@@ -71,7 +71,6 @@ class ZSXN():
         }
         # 创建一个空的 data 字典
         data = {'param': json.dumps(payload)}
-        print(data)
         response = requests.post('https://member.cignacmb.com/mini/member/interface/login', headers=headers, data=data)
         if not response or response.status_code != 200:
             print(f"登陆失败 | {response.text}")
@@ -369,7 +368,6 @@ class ZSXN():
             print('领取糖果异常')
             return
         response_json = response.json()
-        print(response_json)
         if response_json['statusCode'] == '0':
             print(f'✅领取糖果成功 | 糖果+{response_json["data"][0]["disposableCandyNum"]}')
         else:
@@ -398,7 +396,6 @@ class ZSXN():
             print('领取糖果异常')
             return
         response_json = response.json()
-        print(response_json)
         if response_json['statusCode'] == '0':
             print("✅成功投喂糖果")
         else:
@@ -420,11 +417,8 @@ class ZSXN():
             'Sec-Fetch-Dest': 'empty',
             # 'Cookie': 'sajssdk_2015_cross_new_user=1; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%2219038b338ebba7-03118eecaf953ee-2702704-329160-19038b338ec9df%22%2C%22first_id%22%3A%22%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E7%9B%B4%E6%8E%A5%E6%B5%81%E9%87%8F%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC_%E7%9B%B4%E6%8E%A5%E6%89%93%E5%BC%80%22%2C%22%24latest_referrer%22%3A%22%22%7D%2C%22identities%22%3A%22eyIkaWRlbnRpdHlfY29va2llX2lkIjoiMTkwMzhiMzM4ZWJiYTctMDMxMThlZWNhZjk1M2VlLTI3MDI3MDQtMzI5MTYwLTE5MDM4YjMzOGVjOWRmIn0%3D%22%2C%22history_login_id%22%3A%7B%22name%22%3A%22%22%2C%22value%22%3A%22%22%7D%2C%22%24device_id%22%3A%2219038b338ebba7-03118eecaf953ee-2702704-329160-19038b338ec9df%22%7D',
         }
-
-        response = requests.post(
-            'https://hms.cignacmb.com/activity/cignaInvestment/initializeUserInfo',
-            headers=headers,
-        )
+        url = 'https://hms.cignacmb.com/activity/cignaInvestment/initializeUserInfo'
+        response = requests.post(url, headers=headers)
         if not response or response.status_code != 200:
             print('获取用户信息异常')
             return
@@ -571,8 +565,8 @@ class ZSXN():
             time.sleep(random.randint(5, 10))
 
             # 每日签到
-            self.sign()
-            time.sleep(random.randint(10, 15))
+            # self.sign()
+            # time.sleep(random.randint(10, 15))
 
             # 糯米转盘
             # for i in range(self.lottery_count):

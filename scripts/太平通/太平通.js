@@ -77,7 +77,7 @@ async function main() {
         if (latestTopTopic.data.length > 0 && latestTopTopic.data[0].isParticipateIn != 1) {
             let standInLineTopic = await commonPost('/campaignsms/tPkTopicAppointment/standInLineTopic', { "joinPoint": latestTopTopic.data[0].joinWin, "id": latestTopTopic.data[0].id, "dataFrom": 0 });
             console.log(standInLineTopic);
-            //console.log(standInLineTopic.data.topicCoin)
+            //console.frida_log(standInLineTopic.data.topicCoin)
         }
         //做任务
         console.log("————————————")

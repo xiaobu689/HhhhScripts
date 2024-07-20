@@ -54,8 +54,8 @@ class UserInfo {
                 body: `platform=android&token=${this.ck}&timestamp=${Date.now()}&api_version=4`
             }
             let { body: result } = await $.httpRequest(options);
-            //console.log(options);
-            //console.log(result);
+            //console.frida_log(options);
+            //console.frida_log(result);
             if (result.code == 200) {
                 $.log(`✅账号[${this.index}]  积分[${result.data.point}]🎉`)
                 this.ckStatus = true;
@@ -81,8 +81,8 @@ class UserInfo {
                 body: `platform=android&token=${this.ck}&timestamp=${Date.now()}&api_version=4`
             }
             let { body: result } = await $.httpRequest(options);
-            //console.log(options);
-            //console.log(result);
+            //console.frida_log(options);
+            //console.frida_log(result);
             $.log(`✅账号[${this.index}]  打卡[${result.message}]🎉`)
         } catch (e) {
             console.log(e);
@@ -101,8 +101,8 @@ class UserInfo {
                 body: `catid=1&num=20&page=1&api_version=4&platform=android&token=${this.ck}&timestamp=${Date.now()}`
             }
             let { body: result } = await $.httpRequest(options);
-            //console.log(options);
-            //console.log(result);
+            //console.frida_log(options);
+            //console.frida_log(result);
             if (result.data.news) {
                 for (let news of result.data.news) {
                     this.artList.push(
@@ -134,8 +134,8 @@ class UserInfo {
                 body: `platform=android&token=${this.ck}&timestamp=${Date.now()}&api_version=4&newsid=${id}&catid=${catid}`
             }
             let { body: result } = await $.httpRequest(options);
-            //console.log(options);
-            //console.log(result);
+            //console.frida_log(options);
+            //console.frida_log(result);
             if (result.code == 200) {
                 $.log(`✅账号[${this.index}]  阅读[${id}]成功🎉`)
 
@@ -159,8 +159,8 @@ class UserInfo {
                 body: `platform=android&token=${this.ck}&timestamp=${Date.now()}&api_version=4&id=${id}&catid=${catid}`
             }
             let { body: result } = await $.httpRequest(options);
-            //console.log(options);
-            //console.log(result);
+            //console.frida_log(options);
+            //console.frida_log(result);
             if (result.code == 200) {
                 $.log(`✅账号[${this.index}]  分享[${id}]成功🎉`)
 
@@ -184,8 +184,8 @@ class UserInfo {
                 body: `platform=android&token=${this.ck}&timestamp=${Date.now()}&api_version=4&newsid=${id}&catid=${catid}`
             }
             let { body: result } = await $.httpRequest(options);
-            //console.log(options);
-            //console.log(result);
+            //console.frida_log(options);
+            //console.frida_log(result);
             if (result.code == 200) {
                 $.log(`✅账号[${this.index}]  点赞[${id}]成功🎉`)
 

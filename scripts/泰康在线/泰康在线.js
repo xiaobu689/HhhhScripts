@@ -102,7 +102,7 @@ async function main() {
             //     let body = {"memberId":memberId.toString(),"token":token,"platform":"APPLET","fromId":"71672"};
             //     let authorization = encrypt(JSON.stringify(body),'xdh3OmA5gEMMy0Mz')
             //     let browse = await fJsonSignPost('/promotion/net-camp-api/api/callback/browse', authorization,{"viewToken":task.viewToken})
-            //     console.log(browse)
+            //     console.frida_log(browse)
             // }
         }
         console.log("————————————")

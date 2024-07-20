@@ -1,9 +1,12 @@
+import uuid
 from datetime import datetime
 import json
 import requests
 import random
 import re
 import time
+import base64
+import hashlib
 from urllib3.exceptions import InsecureRequestWarning, InsecurePlatformWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
@@ -205,6 +208,81 @@ def random_delay(min_delay=1, max_delay=5):
     print(f">本次随机延迟：【{delay:.2f}】 秒.....")
     time.sleep(delay)
 
+
+def base64_to_hex(base64_str):
+    """
+    解码 Base64 编码的字符串，并转换为十六进制字符串。
+
+    参数:
+    base64_str: Base64 编码的字符串。
+
+    返回:
+    解码后的十六进制字符串。
+    """
+    # Base64 解码
+    decoded_bytes = base64.b64decode(base64_str)
+
+    # 转换为十六进制字符串
+    hex_string = ''.join(['{:02x}'.format(b) for b in decoded_bytes])
+
+    return hex_string
+
+
+def sha256(data):
+    """
+    计算数据的 SHA-256 哈希值，并返回十六进制字符串。
+
+    参数:
+    data: 要进行哈希计算的数据。
+
+    返回:
+    数据的 SHA-256 哈希值的十六进制字符串。
+    """
+    return hashlib.sha256(data.encode()).hexdigest()
+
+def generate_upper_uuid():
+    # 生成一个UUID
+    generated_uuid = uuid.uuid4()
+
+    # 将UUID转换为指定格式字符串，例如：04D273CE-FAE2-4CC8-B020-E172B063ED8E
+    formatted_uuid = str(generated_uuid).upper()
+
+    return formatted_uuid
+
+def generate_lower_uuid():
+    """
+    生成一个 UUID，并将其转换为全小写的字符串格式。
+
+    返回:
+    一个全小写的 UUID 字符串。
+    """
+    # 生成一个 UUID
+    generated_uuid = uuid.uuid4()
+
+    # 将 UUID 转换为指定格式字符串
+    formatted_uuid = str(generated_uuid).lower()
+
+    return formatted_uuid
+
+
+def md5_encrypt(input_string):
+    """
+    对输入的字符串进行 MD5 加密
+
+    参数:
+    input_string (str): 需要加密的字符串
+
+    返回:
+    str: 加密后的 MD5 哈希值（十六进制格式）
+    """
+    # 创建 MD5 对象
+    md5 = hashlib.md5()
+
+    # 更新 MD5 对象
+    md5.update(input_string.encode('utf-8'))
+
+    # 获取 MD5 哈希值的十六进制表示
+    return md5.hexdigest()
 
 # if __name__ == '__main__':
 #     word = daily_one_word()

@@ -89,10 +89,6 @@ class UserInfo {
             if (this.treeWaterNum > 0) {
                 await this.tree_task_water()
             }
-
-            // 今日积分统计
-            await this.user_point_diff()
-
         }
 
     }
@@ -107,9 +103,9 @@ class UserInfo {
             for (let i = 0; i < 10; i++) {
                 await $.wait(1000)
                 let { body: result } = await httpRequest(options);
-                //console.log(options);
+                //console.frida_log(options);
                 result = JSON.parse(result);
-                //console.log(result);
+                //console.frida_log(result);
                 if (result["length"] > 10) {
                     textList.push(result.hitokoto)
                 }
@@ -130,9 +126,9 @@ class UserInfo {
                 headers: this.get_headers(),
             }
             let { body: result } = await httpRequest(options);
-            //console.log(options);
+            //console.frida_log(options);
             result = JSON.parse(result);
-            //console.log(result);
+            //console.frida_log(result);
             if (result.code == 200) {
                 if (result.data == true) {
                     $.log(`今天已签到🎉`)
@@ -161,9 +157,9 @@ class UserInfo {
                 headers: this.get_headers(),
             }
             let { body: result } = await httpRequest(options);
-            //console.log(options);
+            //console.frida_log(options);
             result = JSON.parse(result);
-            //console.log(result);
+            //console.frida_log(result);
             if (result.code == 200) {
                 $.log(`签到成功 获得[${result.data}]分`)
             } else {
@@ -183,12 +179,12 @@ class UserInfo {
                 headers: this.get_headers(),
             }
             let { body: result } = await httpRequest(options);
-            //console.log(options);
+            //console.frida_log(options);
             result = JSON.parse(result);
-            //console.log(result);
+            //console.frida_log(result);
             if (result.code == 200) {
                 pre_scores = result.data.pointBalance
-                $.log(`当前积分[${result.data.pointBalance}]分`)
+                $.log(`当前积分[${result.data.pointBalance}]分🎉`)
             } else {
                 console.log(`❌[${options.fn}]失败`);
                 console.log(JSON.stringify(result));
@@ -197,32 +193,7 @@ class UserInfo {
             console.log(e);
         }
     }
-    async user_point_diff() {
-        try {
-            let options = {
-                fn: "积分查询",
-                method: "get",
-                url: `https://starway.exeedcars.com/api-user/user/integral/get`,
-                headers: this.get_headers(),
-            }
-            let { body: result } = await httpRequest(options);
-            result = JSON.parse(result);
-            if (result.code == 200) {
-                total_scores = result.data.pointBalance
-                diff_scores = total_scores - pre_scores
-                msg = `账号: [${user_phone}] | 总积分[${total_scores}] | 今日新增积分: [${diff_scores}]`
-                console.log(msg);
-                if (total_scores >= 1000) {
-                    await SendMsg("HI星图积分达1000通知", msg)
-                }
-            } else {
-                console.log(`❌[${options.fn}]失败`);
-                console.log(JSON.stringify(result));
-            }
-        } catch (e) {
-            console.log(e);
-        }
-    }
+
     async tree_task_common(id) {
         try {
             let options = {
@@ -233,9 +204,9 @@ class UserInfo {
                 body: JSON.stringify({ "id": id })
             }
             let { body: result } = await httpRequest(options);
-            //console.log(options);
+            //console.frida_log(options);
             result = JSON.parse(result);
-            //console.log(result);
+            //console.frida_log(result);
             if (result.code == 200) {
                 $.log(`完成任务 获得[${result.data}]💧`)
             } else {
@@ -261,9 +232,9 @@ class UserInfo {
                 headers: this.get_headers(),
             }
             let { body: result } = await httpRequest(options);
-            //console.log(options);
+            //console.frida_log(options);
             result = JSON.parse(result);
-            //console.log(result);
+            //console.frida_log(result);
             if (result.code == 200) {
                 this.treeTaskList = result.data
             } else {
@@ -284,9 +255,9 @@ class UserInfo {
                 headers: this.get_headers(),
             }
             let { body: result } = await httpRequest(options);
-            //console.log(options);
+            //console.frida_log(options);
             result = JSON.parse(result);
-            //console.log(result);
+            //console.frida_log(result);
             if (result.code == 200) {
                 $.log(`浇水成功`)
             } else {
@@ -306,9 +277,9 @@ class UserInfo {
                 headers: this.get_headers(),
             }
             let { body: result } = await httpRequest(options);
-            //console.log(options);
+            //console.frida_log(options);
             result = JSON.parse(result);
-            //console.log(result);
+            //console.frida_log(result);
             if (result.code == 200) {
                 $.log(`剩余[${result.data.water}]💧`)
                 this.treeWaterNum = result.data.water
@@ -329,9 +300,9 @@ class UserInfo {
                 headers: this.get_headers(),
             }
             let { body: result } = await httpRequest(options);
-            //console.log(options);
+            //console.frida_log(options);
             result = JSON.parse(result);
-            //console.log(result);
+            //console.frida_log(result);
             if (result.code == 200) {
                 user_phone = result.data.phone
                 $.log(`✅[${result.data.nickName}][${result.data.phone}][${result.data.id}]🎉`)
@@ -364,9 +335,9 @@ class UserInfo {
                 body: JSON.stringify({ "appId": "star", "nonceStr": nonceStr, "content": content, "timestamp": time })
             }
             let { body: result } = await httpRequest(options);
-            // console.log(options);
+            // console.frida_log(options);
             result = JSON.parse(result);
-            // console.log(result);
+            // console.frida_log(result);
             if (result.code == 200) {
                 this.artList = result.data.list
             } else {
@@ -393,9 +364,9 @@ class UserInfo {
                 body: JSON.stringify({ "appId": "star", "nonceStr": nonceStr, "content": content, "timestamp": time })
             }
             let { body: result } = await httpRequest(options);
-            //console.log(options);
+            //console.frida_log(options);
             result = JSON.parse(result);
-            //console.log(result);
+            //console.frida_log(result);
             if (result.code == 200) {
                 console.log(`[${type}]成功`);
             } else {
@@ -444,12 +415,12 @@ class UserInfo {
         }
         let t = JSON.stringify(e);
         t = Ce(t)
-        //console.log(t)
+        //console.frida_log(t)
         let r = jsrsasign_result(t)
         let n = encodeURI(r)
         let s = "body=".concat(t, "&sign=").concat(n)
         let content = jsencrtpt_result(s)
-        //console.log(content);
+        //console.frida_log(content);
         return content
     }
     get_uuid() {

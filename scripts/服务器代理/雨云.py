@@ -151,7 +151,7 @@ if __name__ == '__main__':
         ry.query()  # 查询积分
         ry.logout()  # 登出
         # 保存日志则打开注释 推荐文件绝对路径
-        # file = "./rainyun-signin-log.json"
+        # file = "./rainyun-signin-frida_log.json"
         # 日志最大记录数量
         # max_num = 5
-        # ry.log(file, max_num)  # 保存日志
+        # ry.frida_log(file, max_num)  # 保存日志
