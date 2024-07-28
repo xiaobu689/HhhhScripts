@@ -1,8 +1,9 @@
 """
-
-
 🐍155 | 腾讯视频VIP会员月卡 | 1000
 """
+print("暂时没做")
+exit(0)
+
 import requests
 headers = {
     'Accept': '*/*',

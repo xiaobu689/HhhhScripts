@@ -1,6 +1,7 @@
 /**
  * 海天美味馆
-
+ * token-进入小程序-我的-抓取
+ * hadayToken|uuid-首页-赚积分-走心评论-抓包X-Haday-Token、uuid
  * 变量名: HaiTian
  * 变量格式：
  * [{
@@ -17,14 +18,6 @@
 const name = "海天美味馆"
 const $ = new Env(name)
 const HaiTian = ($.isNode() ? JSON.parse(process.env.HaiTian) : $.getjson("HaiTian")) || [];
-// let HaiTian = [
-//     {
-//         "id": 1,
-//         "token": "eyJhbGciOiJIUzUxMiJ9.eyJ1aWQiOjExODY1NTMsInN1YiI6IkJVWUVSIiwib3BlbklkIjoib2NnNnk0bU5JdlFOQldpTmh0WnI4Q3dPek45RSIsInJvbGVzIjpbIkJVWUVSIl0sImV4cCI6MTcxOTkxNTAwNiwidXVpZCI6InVxZm9nWmVFU3NxTk9GeWJEVFVlIiwidXNlcm5hbWUiOiJtXzkyODUxMzY4NDE3In0.JpkXhLvbHg0XqQN0vPNYQJ0YMD099XM1zdLOaEIzk4-ei3BIb4x-unKpYXR6dafwf1hAlcGeBg05iw6ugQQFiA",
-//         "hadayToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJGYWxhY2xvdWQgVGVjaG5pY2FsIHN1cHBvcnQiLCJhdWQiOiJoYWRheVdYIiwiaXNzIjoiaGFkYXkiLCJleHAiOjE3MjEyODg2NjMsInVzZXJJZCI6IjIwNDM4ODE1MjFiNzRiN2VhZWIyMDk3Yzc0YzhmNmQwIiwiaWF0IjoxNzE4Njk2NjYzfQ.z5xSR5_qAKNimkHOLxQdFUUi1KKzpQb_cng50_IVHew",
-//         "uuid": "uqfogZeESsqNOFybDTUe"
-//     }
-// ]
 let shareCodeArr = []
 let token = ''
 let hadayToken = ''

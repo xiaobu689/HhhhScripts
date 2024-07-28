@@ -1,4 +1,5 @@
-
+print("暂时没做")
+exit(0)
 
 import requests
 headers = {
