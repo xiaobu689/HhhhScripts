@@ -49,12 +49,14 @@ async function main() {
         console.log(signature_key)
         console.log("获取code")
         let credential_auth = await passportPost('/web/oauth/credential_auth')
-        if (!credential_auth.data) {
+        console.log("-------credential_auth=", credential_auth)
+        if (credential_auth.code != 0) {
             console.log(credential_auth.message)
             saveResultToFile("error", name)
             continue
         }
-        saveResultToFile("success", name)
+        push_content = `${name}|${phone_number}`
+        saveResultToFile("success", push_content)
         let code = credential_auth.data.authorization_code.code;
         console.log("登录")
         let login = await commonPost('/api/zbtxz/login', `check_token=&code=${code}&token=&type=-1&union_id=`)

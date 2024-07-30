@@ -59,13 +59,16 @@ class UserInfo {
             if (result.code == 200) {
                 $.log(`✅账号[${this.index}]  积分[${result.data.point}]🎉`)
                 this.ckStatus = true;
+                saveResultToFile("success", "东方烟草报")
             } else {
                 console.log(`❌账号[${this.index}]  用户查询: 失败`);
                 this.ckStatus = false;
                 console.log(result);
+                saveResultToFile("error", "东方烟草报")
             }
         } catch (e) {
             console.log(e);
+            saveResultToFile("error", "东方烟草报")
         }
     }
 
@@ -213,7 +216,7 @@ async function start() {
     if (userList.length > 0) {
         await start();
     }
-    await $.sendMsg($.logs.join("\n"))
+    // await $.sendMsg($.logs.join("\n"))
 })()
     .catch((e) => console.log(e))
     .finally(() => $.done());
@@ -239,6 +242,27 @@ async function checkEnv() {
     }
     return console.log(`共找到${userList.length}个账号`), true; //true == !0
 }
+
+
+const fs = require('fs');
+const todayDate = new Date().toISOString().split('T')[0].replace(/-/g, '');
+function saveResultToFile(status, name) {
+    let result;
+    if (status === "success") {
+        result = `✅【${name}】 | CK正常`;
+    } else if (status === "error") {
+        result = `❌【${name}】 | CK已失效`;
+    }
+
+    const fileName = `script_results_${todayDate}.txt`;
+
+    try {
+        fs.appendFileSync(fileName, `${result}\n`, 'utf8');
+    } catch (err) {
+        console.error(`保存结果到文件时出现异常：${err.message}`);
+    }
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////
 // prettier-ignore

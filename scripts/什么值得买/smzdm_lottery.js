@@ -203,9 +203,37 @@ class SmzdmLotteryBot extends SmzdmBot {
 
   $.log();
 
-  await notify.sendNotify($.name, notifyContent);
+  // await notify.sendNotify($.name, notifyContent);
+
+  // 取消推送，增加测活
+  if (msg.includes('失败')) {
+    saveResultToFile("error", "smzdm 签到")
+  } else {
+    saveResultToFile("success", "smzdm 签到")
+  }
 })().catch((e) => {
   $.log('', `❌ ${$.name}, 失败! 原因: ${e}!`, '')
+  saveResultToFile("error", "smzdm 签到")
 }).finally(() => {
   $.done();
 });
+
+
+const fs = require('fs');
+const todayDate = new Date().toISOString().split('T')[0].replace(/-/g, '');
+function saveResultToFile(status, name) {
+  let result;
+  if (status === "success") {
+    result = `✅【${name}】 | CK正常`;
+  } else if (status === "error") {
+    result = `❌【${name}】 | CK已失效`;
+  }
+
+  const fileName = `script_results_${todayDate}.txt`;
+
+  try {
+    fs.appendFileSync(fileName, `${result}\n`, 'utf8');
+  } catch (err) {
+    console.error(`保存结果到文件时出现异常：${err.message}`);
+  }
+}

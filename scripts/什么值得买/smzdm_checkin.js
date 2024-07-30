@@ -45,9 +45,9 @@ class SmzdmCheckinBot extends SmzdmBot {
 
     if (isSuccess) {
       let msg = `⭐签到成功${data.data.daily_num}天
-🏅金币: ${data.data.cgold}
-🏅碎银: ${data.data.pre_re_silver}
-🏅补签卡: ${data.data.cards}`;
+        🏅金币: ${data.data.cgold}
+        🏅碎银: ${data.data.pre_re_silver}
+        🏅补签卡: ${data.data.cards}`;
 
       await wait(3, 10);
 
@@ -55,9 +55,9 @@ class SmzdmCheckinBot extends SmzdmBot {
 
       if (vip) {
         msg += `\n🏅经验: ${vip.vip.exp_current}
-🏅值会员等级: ${vip.vip.exp_level}
-🏅值会员经验: ${vip.vip.exp_current_level}
-🏅值会员有效期至: ${vip.vip.exp_level_expire}`;
+           🏅值会员等级: ${vip.vip.exp_level}
+           🏅值会员经验: ${vip.vip.exp_current_level}
+           🏅值会员有效期至: ${vip.vip.exp_level_expire}`;
       }
 
       $.log(`${msg}\n`);
@@ -286,9 +286,36 @@ function getDeviceId(cookie) {
 
   $.log();
 
-  await notify.sendNotify($.name, notifyContent);
+  // await notify.sendNotify($.name, notifyContent);
+
+  // 取消推送，增加测活
+  if (msg.includes('失败')) {
+    saveResultToFile("error", "smzdm 签到")
+  } else {
+    saveResultToFile("success", "smzdm 签到")
+  }
 })().catch((e) => {
   $.log('', `❌ ${$.name}, 失败! 原因: ${e}!`, '')
+  saveResultToFile("error", "smzdm 签到")
 }).finally(() => {
   $.done();
 });
+
+const fs = require('fs');
+const todayDate = new Date().toISOString().split('T')[0].replace(/-/g, '');
+function saveResultToFile(status, name) {
+  let result;
+  if (status === "success") {
+    result = `✅【${name}】 | CK正常`;
+  } else if (status === "error") {
+    result = `❌【${name}】 | CK已失效`;
+  }
+
+  const fileName = `script_results_${todayDate}.txt`;
+
+  try {
+    fs.appendFileSync(fileName, `${result}\n`, 'utf8');
+  } catch (err) {
+    console.error(`保存结果到文件时出现异常：${err.message}`);
+  }
+}

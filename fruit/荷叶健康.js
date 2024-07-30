@@ -44,7 +44,15 @@ class Task {
                 //在执行一次 领取水滴
                 await this.taskList(i.venueId)
             }
-            await this.getInfo()
+            let needPer = await getFruitStatusAndPush();
+            if (needPer !== null) {
+                if (needPer === 0) {
+                    // 水果成熟推送通知
+                    await $.sendMsg(`水果成熟啦 | ${result.result.progressBarTips}🎉`)
+                } else {
+                    $.log(`✅账号[${this.index}]  水果种植进度: ${result.result.progressBarTips}🎉`)
+                }
+            }
         }
 
     }
@@ -72,8 +80,6 @@ class Task {
     async signIn() {
         try {
             let result = await this.taskRequest("post", `https://tuan.api.ybm100.com/miniapp/marketing/signActivity/sign`, JSON.stringify({ "actId": 5712, "sceneId": 6, "channelCode": "130" }))
-            //console.frida_log(options);
-            //console.frida_log(result);
             if (result.code == 0) {
                 $.log(`✅账号[${this.index}]  签到成功🎉`)
             } else {
@@ -101,6 +107,21 @@ class Task {
             }
         } catch (e) {
             console.log(e);
+        }
+    }
+    async getFruitPercentage() {
+        try {
+            let result = await this.taskRequest("get", `https://tuan.api.ybm100.com/api/healthSquare/fruitManor/getMyManorInfo?channelCode=130`)
+            if (result.code == 0) {
+                $.log(`✅账号[${this.index}]  当前水滴[${result.result.kettleWater}]-[${result.result.progressBarTips}]🎉`)
+                return result.result.stillNeedPercentage
+            } else {
+                $.log(`❌账号[${this.index}]  获取果园信息失败[${result.msg}]`);
+                return null
+            }
+        } catch (e) {
+            console.log(e);
+            return null
         }
     }
     async getTaskList() {
@@ -278,7 +299,7 @@ class Task {
         }
         await Promise.all(taskall);
     }
-    await $.sendMsg($.logs.join("\n"))
+    // await $.sendMsg($.logs.join("\n"))
 })()
     .catch((e) => console.log(e))
     .finally(() => $.done());
