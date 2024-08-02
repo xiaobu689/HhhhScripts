@@ -206,14 +206,14 @@ class SmzdmLotteryBot extends SmzdmBot {
   // await notify.sendNotify($.name, notifyContent);
 
   // 取消推送，增加测活
-  if (msg.includes('失败')) {
-    saveResultToFile("error", "smzdm 签到")
+  if (notifyContent.includes('失败')) {
+    saveResultToFile("error", "smzdm 抽奖")
   } else {
-    saveResultToFile("success", "smzdm 签到")
+    saveResultToFile("success", "smzdm 抽奖")
   }
 })().catch((e) => {
   $.log('', `❌ ${$.name}, 失败! 原因: ${e}!`, '')
-  saveResultToFile("error", "smzdm 签到")
+  saveResultToFile("error", "smzdm 抽奖")
 }).finally(() => {
   $.done();
 });

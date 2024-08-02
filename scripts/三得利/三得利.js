@@ -7,13 +7,7 @@
  */
 const name = "三得利"
 const $ = new Env(name)
-// const SDL = ($.isNode() ? JSON.parse(process.env.SDL) : $.getjson("SDL")) || [];
-const SDL = [
-    {
-        "id": "骑狗跨大海",
-        "token": "bearer d87be91f-c346-46ed-85b0-bab5507b6c79"
-    }
-]
+const SDL = ($.isNode() ? JSON.parse(process.env.SDL) : $.getjson("SDL")) || [];
 let token = ''
 let notice = ''
 !(async () => {

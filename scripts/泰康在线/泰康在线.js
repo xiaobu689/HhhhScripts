@@ -294,23 +294,8 @@ async function commonTextPost(url, body) {
 }
 
 async function loadUtils() {
-    let code = ($.isNode() ? process.env.Utils_Code : $.getdata('Utils_Code')) || '';
-    if (code && Object.keys(code).length) {
-        console.log(`✅ ${$.name}: 缓存中存在Utils代码, 跳过下载`)
-        eval(code)
-        return creatUtils();
-    }
-    console.log(`🚀 ${$.name}: 开始下载Utils代码`)
-    return new Promise(async (resolve) => {
-        $.getScript(
-            'https://cdn.jsdelivr.net/gh/xzxxn777/Surge@main/Utils/Utils.js'
-        ).then((fn) => {
-            $.setdata(fn, "Utils_Code")
-            eval(fn)
-            console.log(`✅ Utils加载成功, 请继续`)
-            resolve(creatUtils())
-        })
-    })
+    const creatUtils = require('./Utils.js');
+    return creatUtils();
 }
 
 function getSign() {

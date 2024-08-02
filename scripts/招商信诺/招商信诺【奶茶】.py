@@ -12,14 +12,6 @@ class Env:
 
 
 class ZSNC():
-    """
-    招商信诺
-
-    #by-莫老师，版本1.3
-    招商信诺小程序
-    cron: 30 1 * * *
-    """
-
     def __init__(self, appid, url):
         self.appid = appid
         self.url = url

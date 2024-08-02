@@ -16,13 +16,11 @@
 
 const name = "众安健康"
 const $ = new Env(name);
-const notify = $.isNode() ? require("./sendNotify") : "";
 const Notify = 0; //0为关闭通知，1为打开通知,默认为1
 const debug = 0; //0为关闭调试，1为打开调试,默认为0
 //////////////////////
 
 let ckStr = ($.isNode() ? process.env.ZAJK_token : $.getdata(`ZAJK_token`)) || '';
-
 let msg = "";
 let ck = "";
 let G = '它山之石，可以攻玉'
@@ -180,12 +178,18 @@ async function all() {
 	if (S === `众安健康领取奖励`) {
 		await task(`post`, `https://ihealth.zhongan.com/api/lemon/v1/common/activity/homePage`, header, `{"activityCode":"ONA20220411001","channelCode":"c20195660470001"}`)
 		let rw1 = DATA.result.valuableRewardList[0]
-
-		let totalAward = DATA.sumAward
-		let sumAllowWithdraw = DATA.sumAllowWithdraw
+		let totalAward = DATA.result.sumAward
+		let sumAllowWithdraw = DATA.result.sumAllowWithdraw
 		console.log(`累计金额: ${totalAward} | 可提现金额: ${sumAllowWithdraw}`)
 		if (sumAllowWithdraw > 0) {
-			SendMsg("众安健康提现门槛达标，请前往小程序提现！")
+			await task(`post`, `https://ihealth.zhongan.com/api/lemon/v1/common/activity/withdraw`, header, `{"channelCode":"c20195660470001","activityCode":"ONA20220411001","amount":500}`)
+			if (DATA.code === '0') {
+				console.log(`提现成功`)
+				// 推送提醒查看
+				SendMsg("众安健康已成功提现5元，请前往微信查看！")
+			} else {
+				console.log(`提现失败`)
+			}
 		}
 		if (rw1 !== undefined) {
 			taskarr = DATA.result.valuableRewardList
@@ -246,7 +250,6 @@ async function getCks(ck, str) {
 }
 
 async function GetRewrite() { //member/userInfo/getLoginInfoSpecial
-
 	if ($request.url.indexOf("member") > -1 && $request.url.indexOf("userInfo") > -1 && $request.url.indexOf("getLoginInfoSpecial") > -1) {
 		cks = $request.body
 		const ck = cks.split(`"ticket":"`)[1].split(`"`)[0]

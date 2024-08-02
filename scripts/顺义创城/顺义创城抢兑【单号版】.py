@@ -11,6 +11,7 @@ const $ = new Env("顺义创城抢兑");
 
 import datetime
 import asyncio
+import json
 import os
 import re
 import time
@@ -41,10 +42,15 @@ async def cashout(token, phone):
         'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.49(0x1800312c) NetType/WIFI Language/zh_CN',
     }
     url = 'https://admin.shunyi.wenming.city/jeecg-boot/applet/award/exchangeAward'
-    start_time = time.time()  # 记录开始发送请求的时间
+    start_time = time.time()
     # 1562334019131645953|2元
     # 1788826595521810434|1元
-    body = f'{"awardIds":["1788826595521810434"],"phone":{phone}}'
+    payload = {
+        "awardIds": ["1788826595521810434"],
+        "phone": phone
+    }
+    # 创建一个空的 data 字典
+    body = json.dumps(payload)
     async with aiohttp.ClientSession(headers=headers) as session:
         try:
             async with session.post(url, data=body) as response:
@@ -69,7 +75,7 @@ async def cashout(token, phone):
 
 async def main():
     messages = []
-    SY_token = os.getenv('SYCC_TOKEN')
+    SY_token = os.getenv('SYCC_QD')
     if not SY_token:
         print(f'⛔️未获取到ck变量：请检查变量 {SY_token} 是否填写')
         return
@@ -80,7 +86,7 @@ async def main():
     token, phone, millisecond = sycc_token.split('#')
 
     now = datetime.now()
-    if now.hour in [7, 11, 19]:
+    if now.hour in [7, 11, 13]:
         target_hour = now.hour
     else:
         print("⚠️ 当前时间不在抢购时间段内。")

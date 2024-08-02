@@ -289,7 +289,7 @@ function getDeviceId(cookie) {
   // await notify.sendNotify($.name, notifyContent);
 
   // 取消推送，增加测活
-  if (msg.includes('失败')) {
+  if (notifyContent.includes('失败')) {
     saveResultToFile("error", "smzdm 签到")
   } else {
     saveResultToFile("success", "smzdm 签到")

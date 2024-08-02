@@ -188,13 +188,11 @@ class SSX():
             'gameId': self.adoptingId
         }
         response = requests.post(url, headers=self.headers, json=data).json()
-        print(response)
         now_score = response["data"]["feedUserGameNew"]["nowScore"]
         need_score = response["data"]["feedUserGameNew"]["needScore"]
         msg = f'-----------------------------------\n'
         if response['errCode'] == 0:
-            msg += f'✅喂养成功，更新等级进度：{now_score-10}/{need_score}===》{now_score}/{need_score}\n'
-            # 判断当前宠物完成状态(不确定喂成后是100还是清零，先这么判断吧)
+            msg += f'✅喂养成功，更新等级进度：{now_score-10}/{need_score}➡️{now_score}/{need_score}\n'
             if now_score == 100:
                 print("✅喂养完成，开始领养新的宠物")
                 self.adopt()
@@ -440,21 +438,11 @@ class SSX():
         self.game_share()
         time.sleep(random.randint(5, 15))
 
-        # self.query_mall()
-        # time.sleep(random.randint(15, 20))
-
         self.receive()
         time.sleep(random.randint(5, 10))
 
         self.xl_subway_ticket_list()
         time.sleep(random.randint(5, 10))
-
-        # 可用地铁券列表
-        self.my_subway_tickets()
-        time.sleep(random.randint(5, 10))
-
-        # 通知
-        # send(title, self.msg)
 
 
 if __name__ == '__main__':

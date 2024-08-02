@@ -299,7 +299,7 @@ class SHHP_MALL():
             growth = response_json["data"]["exp"]
             diff = growth - self.pre_growth
             print('\n-----------------------------------------------------')
-            print(f'🐶账号: {nick_name} | 🌱成长值: {growth}成长值 | 🍄今日新增: {diff}')
+            print(f'🐶账号: {nick_name} | 🌱成长值: {growth} | 🍄今日新增: {diff}')
             # 活跃值达标1200触发通知
             if growth >= 1200:
                 message = "上海黄浦成长值达标1200, 解锁20元E卡兑换资格\n"
