@@ -591,26 +591,6 @@ function getRandomElement(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
 }
 
-// async function loadUtils() {
-//     let code = ($.isNode() ? process.env.Utils_Code : $.getdata('Utils_Code')) || '';
-//     if (code && Object.keys(code).length) {
-//         console.frida_log(`✅ ${$.name}: 缓存中存在Utils代码, 跳过下载`)
-//         eval(code)
-//         return creatUtils();
-//     }
-//     console.frida_log(`🚀 ${$.name}: 开始下载Utils代码`)
-//     return new Promise(async (resolve) => {
-//         $.getScript(
-//             'https://cdn.jsdelivr.net/gh/xzxxn777/Surge@main/Utils/Utils.js'
-//         ).then((fn) => {
-//             $.setdata(fn, "Utils_Code")
-//             eval(fn)
-//             console.frida_log(`✅ Utils加载成功, 请继续`)
-//             resolve(creatUtils())
-//         })
-//     })
-// }
-
 // 不使用下载、缓存，直接调用本地
 async function loadUtils() {
 

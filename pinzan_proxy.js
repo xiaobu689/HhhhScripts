@@ -4,13 +4,7 @@ const crypto = require('crypto');
 const axios = require('axios');
 
 const env_name = 'PZ_CONFIG';
-// const pinzan_config = process.env[env_name];
-const pinzan_config = {
-    "password": "Admin201404293",
-    "no": "20240524952954587395",
-    "tiqu_secret": "63ho0v8i55tnvc",
-    "sig_secret": "s8j1aolvgkobpq81"
-}
+const pinzan_config = process.env[env_name];
 if (!pinzan_config) {
     console.log(`⛔️未获取到配置变量：请检查变量 ${env_name} 是否填写`);
     process.exit(0);

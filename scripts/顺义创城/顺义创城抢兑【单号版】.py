@@ -7,8 +7,11 @@
 
 cron: 58 7,11,19 * * *
 const $ = new Env("顺义创城抢兑");
+------------------------------
+20240804 增加自动切换账号抢兑, 一个账号抢兑成功，下一轮自动切换到下一个账号
+------------------------------
 """
-
+import csv
 import datetime
 import asyncio
 import json
@@ -73,6 +76,27 @@ async def cashout(token, phone):
             return error_message
 
 
+def get_success_count():
+    # 删除旧文件
+    today_date = datetime.now().strftime("%Y%m%d")
+    file_name = f'sycc_tx_success_{today_date}.csv'
+    print(file_name)
+    files = os.listdir('.')
+    files_to_delete = [f for f in files if 'sycc_tx_success' in f and today_date not in f]
+    for f in files_to_delete:
+        os.remove(f)
+
+    # 读取新文件
+    if os.path.exists(file_name):
+        with open(file_name, 'r') as file:
+            reader = csv.reader(file)
+            success_phones = [row[0] for row in reader]
+    else:
+        success_phones = []
+
+    return len(success_phones)
+
+
 async def main():
     messages = []
     SY_token = os.getenv('SYCC_QD')
@@ -80,9 +104,12 @@ async def main():
         print(f'⛔️未获取到ck变量：请检查变量 {SY_token} 是否填写')
         return
 
-    # 第一个账号参与抢兑
     tokens = re.split(r'&', SY_token)
-    sycc_token = tokens[0]
+    count = get_success_count()
+    if count >= len(tokens):
+        exit(0)
+
+    sycc_token = tokens[count]
     token, phone, millisecond = sycc_token.split('#')
 
     now = datetime.now()
@@ -94,13 +121,22 @@ async def main():
 
     await trigger_at_specific_millisecond(target_hour, 59, 59, int(millisecond))
 
-    tasks = [cashout(token, phone) for _ in range(10)]
+    tasks = [cashout(token, phone) for _ in range(3)]
     results = await asyncio.gather(*tasks)
-
+    success_flag = 0
     for result in results:
+        if "提现成功" in result:
+            success_flag = 1
         messages.append(result)
 
-    # 消息推送
+    if success_flag > 0:
+        today_date = datetime.now().strftime("%Y%m%d")
+        file_name = f'sycc_tx_success_{today_date}.csv'
+        with open(file_name, 'a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow([phone])
+        print(f"✅ 抢兑成功，手机号 {phone} 已记录到 sycc_tx_success.csv 文件中")
+
     send("顺义创城枪兑结果通知", "\n".join(messages))
 
 

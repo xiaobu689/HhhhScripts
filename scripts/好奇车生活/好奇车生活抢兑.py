@@ -42,7 +42,7 @@ async def trigger_at_specific_millisecond(hour, minute, second, millisecond):
             break
         # else:
         #     print(f"当前时间: {now.hour}:{now.minute}:{now.second}.{now.microsecond // 1000}")
-        await asyncio.sleep(0)  # 让出控制权给其他任务
+        await asyncio.sleep(0)
 
 
 async def exchange(account_id):
@@ -53,13 +53,14 @@ async def exchange(account_id):
         'accountId': account_id,
     }
 
-    # 5.88元红包构造参数
+    # 5.88元红包
     # pointsMallCardId = '754493011522113536'
     # exchangeNeedPoints = 888
 
-    # 18元京东E卡构造参数
+    # 18元京东E卡
     pointsMallCardId = '792556957722198016'
     exchangeNeedPoints = 1800
+
     exchangeCount = 1
     exchangeType = 0
     exchangeNeedMoney = 0
@@ -69,16 +70,14 @@ async def exchange(account_id):
     async with aiohttp.ClientSession(headers=headers) as session:
         try:
             async with session.get(url) as response:
-                # 计算接收响应的时间
                 end_time = time.time()
-                end_response = datetime.now()  # 记录收到响应的当前时间
+                end_response = datetime.now()
                 duration_ms = (end_time - start_time) * 1000
-
                 data = await response.json()
                 if data["code"] == 200:
-                    message = f"✅ 提现成功 | {data['message']} | 耗时: {duration_ms:.2f} ms | 响应时间：{end_response.strftime('%H:%M:%S.%f')[:-3]}"
+                    message = f"✅ 抢兑成功 | {data['message']} | 耗时: {duration_ms:.2f} ms | 响应时间：{end_response.strftime('%H:%M:%S.%f')[:-3]}"
                 else:
-                    message = f"❌ 提现失败 | {data['message']} | 耗时：{duration_ms:.2f} ms | 响应时间：{end_response.strftime('%H:%M:%S.%f')[:-3]}"
+                    message = f"❌ 抢兑失败 | {data['message']} | 耗时：{duration_ms:.2f} ms | 响应时间：{end_response.strftime('%H:%M:%S.%f')[:-3]}"
                 print(message)
                 return message
         except Exception as e:
@@ -88,9 +87,8 @@ async def exchange(account_id):
 
 
 async def main():
-    messages = []  # 用于存储每次提现操作的消息
+    messages = []
     cheryfs = os.getenv('Cheryfs')
-    cheryfs = 'oqX_y5Y_FfcApLTeAcmHX4R_kQ6E#efddacbbbdd70a7f2f77498ed59afe298c5b7e31489a3a4ca5beeffceafcd63f'
     if not cheryfs:
         print(f'⛔️未获取到ck变量：请检查变量 {cheryfs} 是否填写')
         return

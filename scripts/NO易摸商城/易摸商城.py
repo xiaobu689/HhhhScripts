@@ -12,6 +12,7 @@ const $ = new Env("NO易摸");
 20240628 增加断签报错消息通知功能
 -----------------------------
 """
+import json
 import os
 import random
 import re
@@ -20,6 +21,7 @@ import requests
 from common import save_result_to_file
 from sendNotify import send
 from urllib3.exceptions import InsecureRequestWarning, InsecurePlatformWarning
+
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
 
@@ -186,11 +188,18 @@ if __name__ == '__main__':
     if not tokenStr:
         print(f'⛔️未获取到ck变量：请检查变量 {env_name} 是否填写')
         exit(0)
-    tokens = re.split(r'&', tokenStr)
-    print(f"NO易摸共获取到{len(tokens)}个账号")
-    for i, token in enumerate(tokens, start=1):
+
+    try:
+        json_data = json.loads(tokenStr)
+        print(f"共获取到{len(json_data)}个账号")
+    except json.JSONDecodeError:
+        print('⛔️ JSON 解析失败，请检查变量格式是否正确')
+        exit(0)
+
+    for i, token_data in enumerate(json_data, start=1):
         print(f"\n======== ▷ 第 {i} 个账号 ◁ ========")
+        token = token_data.get('token')
+        user_id = token_data.get('id')
         NOYM(token).main()
-        print("\n随机等待30-60s进行下一个账号")
-        time.sleep(random.randint(5, 10))
-        print("----------------------------------")
+        print("\n随机等待10-15s进行下一个账号")
+        time.sleep(random.randint(10, 15))

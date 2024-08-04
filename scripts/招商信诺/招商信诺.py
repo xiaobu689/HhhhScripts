@@ -13,6 +13,7 @@ const $ = new Env("招商信诺");
 
 --------------------------
 20240714 修复CK有效期短问题
+20240804 增加等级宝箱抽奖、转盘抽奖
 --------------------------
 """
 import json
@@ -23,6 +24,7 @@ import time
 import requests
 from urllib3.exceptions import InsecureRequestWarning, InsecurePlatformWarning
 from common import save_result_to_file
+
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
 
@@ -69,7 +71,6 @@ class ZSXN():
             "miniOpenid": self.miniopenid,
             "sensorDeviceId": self.miniopenid
         }
-        # 创建一个空的 data 字典
         data = {'param': json.dumps(payload)}
         response = requests.post('https://member.cignacmb.com/mini/member/interface/login', headers=headers, data=data)
         if not response or response.status_code != 200:
@@ -78,7 +79,7 @@ class ZSXN():
             return False
         response_json = response.json()
         if response_json["respCode"] == "00":
-            # 获取响应头中 Authorization 字段的值
+            print("登录成功")
             token = response.headers.get('token', '')
             self.headers['access-token'] = f'Bearer_{token}'
             self.token = f'Bearer_{token}'
@@ -139,16 +140,13 @@ class ZSXN():
             'X-Requested-With': 'XMLHttpRequest',
             'Sec-Fetch-Site': 'same-origin',
             'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
-            # 'Accept-Encoding': 'gzip, deflate, br',
             'Sec-Fetch-Mode': 'cors',
             'Content-Type': 'application/x-www-form-urlencoded',
             'Origin': 'https://member.cignacmb.com',
-            # 'Content-Length': '12',
             'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;hmsapp/5.24.10;HMS_APP_SESSIONID/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzaWduRGF0YSI6IjA2MDY1QjhFMzNEMDg0MzRBNkZGQ0E2MTE5RENBNUJBODIxMTcxIiwibG9naW5UaW1lIjoiMTcxODg3NzgxMTk2OCIsIm5iZiI6MTcxODg3NzgxMSwiZXhwdCI6MTcxODk2NDIxMTk2OCwiaXNzIjoiSldUIiwiZnJvbSI6IkFQUCIsImV4cCI6MTcyMDA4NzQxMSwidXNlcklkIjoiNzE4MTgwNSIsImlhdCI6MTcxODg3NzgxMX0.ZpbJfVcqx3AlDiZt99XUTpbvpSOoGCHigHfXhdeyS7M;',
             'Referer': 'https://member.cignacmb.com/mb-web/shop/mod/index.html?appVersion=5.24.10',
             'Connection': 'keep-alive',
             'Sec-Fetch-Dest': 'empty',
-            # 'Cookie': 'GPMEM80=SV-MEM-80-01; sajssdk_2015_cross_new_user=1; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%2219035b17be321ca-0dcea045abdc528-2702704-329160-19035b17be41903%22%2C%22first_id%22%3A%22%22%2C%22props%22%3A%7B%7D%2C%22identities%22%3A%22eyIkaWRlbnRpdHlfY29va2llX2lkIjoiMTkwMzViMTdiZTMyMWNhLTBkY2VhMDQ1YWJkYzUyOC0yNzAyNzA0LTMyOTE2MC0xOTAzNWIxN2JlNDE5MDMifQ%3D%3D%22%2C%22history_login_id%22%3A%7B%22name%22%3A%22%22%2C%22value%22%3A%22%22%7D%2C%22%24device_id%22%3A%2219035b17be321ca-0dcea045abdc528-2702704-329160-19035b17be41903%22%7D; requestChannel=GHB',
         }
 
         data = {
@@ -180,16 +178,13 @@ class ZSXN():
             'X-Requested-With': 'XMLHttpRequest',
             'Sec-Fetch-Site': 'same-origin',
             'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
-            # 'Accept-Encoding': 'gzip, deflate, br',
             'Sec-Fetch-Mode': 'cors',
             'Content-Type': 'application/x-www-form-urlencoded',
             'Origin': 'https://member.cignacmb.com',
-            # 'Content-Length': '12',
             'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;hmsapp/5.24.10;HMS_APP_SESSIONID/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzaWduRGF0YSI6IjA2MDY1QjhFMzNEMDg0MzRBNkZGQ0E2MTE5RENBNUJBODIxMTcxIiwibG9naW5UaW1lIjoiMTcxODg3NzgxMTk2OCIsIm5iZiI6MTcxODg3NzgxMSwiZXhwdCI6MTcxODk2NDIxMTk2OCwiaXNzIjoiSldUIiwiZnJvbSI6IkFQUCIsImV4cCI6MTcyMDA4NzQxMSwidXNlcklkIjoiNzE4MTgwNSIsImlhdCI6MTcxODg3NzgxMX0.ZpbJfVcqx3AlDiZt99XUTpbvpSOoGCHigHfXhdeyS7M;',
             'Referer': 'https://member.cignacmb.com/mb-web/shop/mod/index.html?appVersion=5.24.10',
             'Connection': 'keep-alive',
             'Sec-Fetch-Dest': 'empty',
-            # 'Cookie': 'GPMEM80=SV-MEM-80-01; sajssdk_2015_cross_new_user=1; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%2219035b17be321ca-0dcea045abdc528-2702704-329160-19035b17be41903%22%2C%22first_id%22%3A%22%22%2C%22props%22%3A%7B%7D%2C%22identities%22%3A%22eyIkaWRlbnRpdHlfY29va2llX2lkIjoiMTkwMzViMTdiZTMyMWNhLTBkY2VhMDQ1YWJkYzUyOC0yNzAyNzA0LTMyOTE2MC0xOTAzNWIxN2JlNDE5MDMifQ%3D%3D%22%2C%22history_login_id%22%3A%7B%22name%22%3A%22%22%2C%22value%22%3A%22%22%7D%2C%22%24device_id%22%3A%2219035b17be321ca-0dcea045abdc528-2702704-329160-19035b17be41903%22%7D; requestChannel=GHB',
         }
 
         data = {
@@ -219,16 +214,13 @@ class ZSXN():
             'X-Requested-With': 'XMLHttpRequest',
             'Sec-Fetch-Site': 'same-origin',
             'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
-            # 'Accept-Encoding': 'gzip, deflate, br',
             'Sec-Fetch-Mode': 'cors',
             'Content-Type': 'application/x-www-form-urlencoded',
             'Origin': 'https://member.cignacmb.com',
-            # 'Content-Length': '12',
             'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;hmsapp/5.24.10;HMS_APP_SESSIONID/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzaWduRGF0YSI6IjA2MDY1QjhFMzNEMDg0MzRBNkZGQ0E2MTE5RENBNUJBODIxMTcxIiwibG9naW5UaW1lIjoiMTcxODg3NzgxMTk2OCIsIm5iZiI6MTcxODg3NzgxMSwiZXhwdCI6MTcxODk2NDIxMTk2OCwiaXNzIjoiSldUIiwiZnJvbSI6IkFQUCIsImV4cCI6MTcyMDA4NzQxMSwidXNlcklkIjoiNzE4MTgwNSIsImlhdCI6MTcxODg3NzgxMX0.ZpbJfVcqx3AlDiZt99XUTpbvpSOoGCHigHfXhdeyS7M;',
             'Referer': 'https://member.cignacmb.com/mb-web/shop/mod/?appVersion=5.24.10',
             'Connection': 'keep-alive',
             'Sec-Fetch-Dest': 'empty',
-            # 'Cookie': 'GPMEM80=SV-MEM-80-01; sajssdk_2015_cross_new_user=1; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%2219035b59f4c197f-027101559d408b6-2702704-329160-19035b59f4d23b2%22%2C%22first_id%22%3A%22%22%2C%22props%22%3A%7B%7D%2C%22identities%22%3A%22eyIkaWRlbnRpdHlfY29va2llX2lkIjoiMTkwMzViNTlmNGMxOTdmLTAyNzEwMTU1OWQ0MDhiNi0yNzAyNzA0LTMyOTE2MC0xOTAzNWI1OWY0ZDIzYjIifQ%3D%3D%22%2C%22history_login_id%22%3A%7B%22name%22%3A%22%22%2C%22value%22%3A%22%22%7D%2C%22%24device_id%22%3A%2219035b59f4c197f-027101559d408b6-2702704-329160-19035b59f4d23b2%22%7D; requestChannel=GHB',
         }
 
         data = {
@@ -265,7 +257,6 @@ class ZSXN():
             'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;hmsapp/5.24.10;HMS_APP_SESSIONID/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzaWduRGF0YSI6IjA2MDY1QjhFMzNEMDg0MzRBNkZGQ0E2MTE5RENBNUJBODIxMTcxIiwibG9naW5UaW1lIjoiMTcxODg3NzgxMTk2OCIsIm5iZiI6MTcxODg3NzgxMSwiZXhwdCI6MTcxODk2NDIxMTk2OCwiaXNzIjoiSldUIiwiZnJvbSI6IkFQUCIsImV4cCI6MTcyMDA4NzQxMSwidXNlcklkIjoiNzE4MTgwNSIsImlhdCI6MTcxODg3NzgxMX0.ZpbJfVcqx3AlDiZt99XUTpbvpSOoGCHigHfXhdeyS7M;',
             'Referer': 'https://hms.cignacmb.com/hms-act/nurturing_game_reset/index.html?appVersion=5.24.10&token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzaWduRGF0YSI6IjA2MDY1QjhFMzNEMDg0MzRBNkZGQ0E2MTE5RENBNUJBODIxMTcxIiwibG9naW5UaW1lIjoiMTcxODg3NzgxMTk2OCIsIm5iZiI6MTcxODg3NzgxMSwiZXhwdCI6MTcxODk2NDIxMTk2OCwiaXNzIjoiSldUIiwiZnJvbSI6IkFQUCIsImV4cCI6MTcyMDA4NzQxMSwidXNlcklkIjoiNzE4MTgwNSIsImlhdCI6MTcxODg3NzgxMX0.ZpbJfVcqx3AlDiZt99XUTpbvpSOoGCHigHfXhdeyS7M',
             'Connection': 'keep-alive',
-            # 'Cookie': 'GPHMS=SV-HMS-80-02; live800_userid=8890359000; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%22889060107244%22%2C%22first_id%22%3A%22%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E7%9B%B4%E6%8E%A5%E6%B5%81%E9%87%8F%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC_%E7%9B%B4%E6%8E%A5%E6%89%93%E5%BC%80%22%2C%22%24latest_referrer%22%3A%22%22%2C%22_latest_iq_id%22%3A%22APPZY%22%7D%2C%22identities%22%3A%22eyIkaWRlbnRpdHlfY29va2llX2lkIjoiMTkwMzVkOTFmMmMyMzAtMDczMmEzNWNjNzJlNmM4LTI3MDI3MDQtMzI5MTYwLTE5MDM1ZDkxZjJlN2NkIiwiJGlkZW50aXR5X2Fub255bW91c19pZCI6Ijg4OTA2MDEwNzI0NCJ9%22%2C%22history_login_id%22%3A%7B%22name%22%3A%22%22%2C%22value%22%3A%22%22%7D%2C%22%24device_id%22%3A%2219035d91f2c230-0732a35cc72e6c8-2702704-329160-19035d91f2e7cd%22%7D; sajssdk_2015_cross_new_user=1',
             'Sec-Fetch-Dest': 'empty',
         }
 
@@ -322,7 +313,6 @@ class ZSXN():
             'Referer': 'https://hms.cignacmb.com/hms-act/nurturing_game_reset/index.html?appVersion=5.24.10&token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzaWduRGF0YSI6IjA2MDY1QjhFMzNEMDg0MzRBNkZGQ0E2MTE5RENBNUJBODIxMTcxIiwibG9naW5UaW1lIjoiMTcxODg3NzgxMTk2OCIsIm5iZiI6MTcxODg3NzgxMSwiZXhwdCI6MTcxODk2NDIxMTk2OCwiaXNzIjoiSldUIiwiZnJvbSI6IkFQUCIsImV4cCI6MTcyMDA4NzQxMSwidXNlcklkIjoiNzE4MTgwNSIsImlhdCI6MTcxODg3NzgxMX0.ZpbJfVcqx3AlDiZt99XUTpbvpSOoGCHigHfXhdeyS7M',
             'Connection': 'keep-alive',
             'Sec-Fetch-Dest': 'empty',
-            # 'Cookie': 'GPHMS=SV-HMS-80-02; live800_userid=8890359000; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%22889060107244%22%2C%22first_id%22%3A%22%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E7%9B%B4%E6%8E%A5%E6%B5%81%E9%87%8F%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC_%E7%9B%B4%E6%8E%A5%E6%89%93%E5%BC%80%22%2C%22%24latest_referrer%22%3A%22%22%2C%22_latest_iq_id%22%3A%22APPZY%22%7D%2C%22identities%22%3A%22eyIkaWRlbnRpdHlfY29va2llX2lkIjoiMTkwMzVkOTFmMmMyMzAtMDczMmEzNWNjNzJlNmM4LTI3MDI3MDQtMzI5MTYwLTE5MDM1ZDkxZjJlN2NkIiwiJGlkZW50aXR5X2Fub255bW91c19pZCI6Ijg4OTA2MDEwNzI0NCJ9%22%2C%22history_login_id%22%3A%7B%22name%22%3A%22%22%2C%22value%22%3A%22%22%7D%2C%22%24device_id%22%3A%2219035d91f2c230-0732a35cc72e6c8-2702704-329160-19035d91f2e7cd%22%7D; sajssdk_2015_cross_new_user=1',
         }
 
         data = {
@@ -355,7 +345,6 @@ class ZSXN():
             'Referer': 'https://hms.cignacmb.com/hms-act/nurturing_game_reset/index.html?appVersion=5.24.10&token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzaWduRGF0YSI6IjA2MDY1QjhFMzNEMDg0MzRBNkZGQ0E2MTE5RENBNUJBODIxMTcxIiwibG9naW5UaW1lIjoiMTcxODg3NzgxMTk2OCIsIm5iZiI6MTcxODg3NzgxMSwiZXhwdCI6MTcxODk2NDIxMTk2OCwiaXNzIjoiSldUIiwiZnJvbSI6IkFQUCIsImV4cCI6MTcyMDA4NzQxMSwidXNlcklkIjoiNzE4MTgwNSIsImlhdCI6MTcxODg3NzgxMX0.ZpbJfVcqx3AlDiZt99XUTpbvpSOoGCHigHfXhdeyS7M',
             'Connection': 'keep-alive',
             'Sec-Fetch-Dest': 'empty',
-            # 'Cookie': 'GPHMS=SV-HMS-80-02; live800_userid=8890359000; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%22889060107244%22%2C%22first_id%22%3A%22%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E7%9B%B4%E6%8E%A5%E6%B5%81%E9%87%8F%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC_%E7%9B%B4%E6%8E%A5%E6%89%93%E5%BC%80%22%2C%22%24latest_referrer%22%3A%22%22%2C%22_latest_iq_id%22%3A%22APPZY%22%7D%2C%22identities%22%3A%22eyIkaWRlbnRpdHlfY29va2llX2lkIjoiMTkwMzVkOTFmMmMyMzAtMDczMmEzNWNjNzJlNmM4LTI3MDI3MDQtMzI5MTYwLTE5MDM1ZDkxZjJlN2NkIiwiJGlkZW50aXR5X2Fub255bW91c19pZCI6Ijg4OTA2MDEwNzI0NCJ9%22%2C%22history_login_id%22%3A%7B%22name%22%3A%22%22%2C%22value%22%3A%22%22%7D%2C%22%24device_id%22%3A%2219035d91f2c230-0732a35cc72e6c8-2702704-329160-19035d91f2e7cd%22%7D; sajssdk_2015_cross_new_user=1',
         }
 
         data = {
@@ -391,7 +380,7 @@ class ZSXN():
         }
 
         response = requests.post('https://hms.cignacmb.com/activity/cignaInvestment/investCandy',
-                                headers=headers)
+                                 headers=headers)
         if not response or response.status_code != 200:
             print('领取糖果异常')
             return
@@ -427,9 +416,10 @@ class ZSXN():
             candy_num = response_json['data']['candyNum']
             growth_level = response_json['data']['growthLevel']
             growth_level_candy_num = response_json['data']['growthLevelCandyNum']
-            received_naomi_num = response_json['data']['receivedNaomiNum'] # 27%
+            received_naomi_num = response_json['data']['receivedNaomiNum']  # 27%
             print(f'✅当前进度: {received_naomi_num}')
-            print(f"✅用户信息获取成功 | 当前等级：{growth_level} | 当前糖果：{candy_num} | 当前等级成长值：{growth_level_candy_num}")
+            print(
+                f"✅用户信息获取成功 | 当前等级：{growth_level} | 当前糖果：{candy_num} | 当前等级成长值：{growth_level_candy_num}")
         else:
             print("❌获取用户信息失败，", response_json['msg'])
 
@@ -556,6 +546,51 @@ class ZSXN():
         else:
             print('❌健康任务奖励领取失败, ', response_json['msg'])
 
+    # 等级宝箱抽奖
+    def user_treasure_box(self):
+        headers = {
+            'Host': 'hms.cignacmb.com',
+            'userId': '8017656',
+            'Accept': 'application/json, text/plain, */*',
+            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;hmsapp/5.24.10;HMS_APP_SESSIONID/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzaWduRGF0YSI6IjE2Rjg3NUVBM0RBNUQwMUMwRUEyN0NDNzA3NjU5REVEMzgwMTMwIiwibG9naW5UaW1lIjoiMTcyMjc2NTI5MTM4NSIsIm5iZiI6MTcyMjc2NTI5MSwiZXhwdCI6MTcyMjg1MTY5MTM4NSwiaXNzIjoiSldUIiwiZnJvbSI6IkFQUCIsImV4cCI6MTcyMzk3NDg5MSwidXNlcklkIjoiODAxNzY1NiIsImlhdCI6MTcyMjc2NTI5MX0.znlxOp7PAObnlIsQ3DlHiH10r-zven_TkBEOerHl_j8;',
+            'Authorization': 'Bearer_eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzaWduRGF0YSI6IjE2Rjg3NUVBM0RBNUQwMUMwRUEyN0NDNzA3NjU5REVEMzgwMTMwIiwibG9naW5UaW1lIjoiMTcyMjc2NTI5MTM4NSIsIm5iZiI6MTcyMjc2NTI5MSwiZXhwdCI6MTcyMjg1MTY5MTM4NSwiaXNzIjoiSldUIiwiZnJvbSI6IkFQUCIsImV4cCI6MTcyMzk3NDg5MSwidXNlcklkIjoiODAxNzY1NiIsImlhdCI6MTcyMjc2NTI5MX0.znlxOp7PAObnlIsQ3DlHiH10r-zven_TkBEOerHl_j8',
+            'Referer': 'https://hms.cignacmb.com/hms-act/nurturing_game_reset/index.html?appVersion=5.24.10&token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzaWduRGF0YSI6IjE2Rjg3NUVBM0RBNUQwMUMwRUEyN0NDNzA3NjU5REVEMzgwMTMwIiwibG9naW5UaW1lIjoiMTcyMjc2NTI5MTM4NSIsIm5iZiI6MTcyMjc2NTI5MSwiZXhwdCI6MTcyMjg1MTY5MTM4NSwiaXNzIjoiSldUIiwiZnJvbSI6IkFQUCIsImV4cCI6MTcyMzk3NDg5MSwidXNlcklkIjoiODAxNzY1NiIsImlhdCI6MTcyMjc2NTI5MX0.znlxOp7PAObnlIsQ3DlHiH10r-zven_TkBEOerHl_j8',
+            'Accept-Language': 'zh-cn',
+        }
+        url = 'https://hms.cignacmb.com/activity/cignaInvestment/getUserTreasureBox'
+        response_json = requests.get(url, headers=headers).json()
+        if response_json['statusCode'] == '0':
+            treasureBoxNum = response_json['data']['treasureBoxNum']
+            isReceived = response_json['data']['isReceived']
+            if isReceived > 0:
+                self.user_treasure_box_lottery()
+        else:
+            print(f'❌等级宝箱信息获取异常 | {response_json["msg"]}')
+
+    def user_treasure_box_lottery(self):
+        headers = {
+            'Host': 'hms.cignacmb.com',
+            'Accept': 'application/json, text/plain, */*',
+            'Authorization': 'Bearer_eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzaWduRGF0YSI6IjE2Rjg3NUVBM0RBNUQwMUMwRUEyN0NDNzA3NjU5REVEMzgwMTMwIiwibG9naW5UaW1lIjoiMTcyMjc2NTI5MTM4NSIsIm5iZiI6MTcyMjc2NTI5MSwiZXhwdCI6MTcyMjg1MTY5MTM4NSwiaXNzIjoiSldUIiwiZnJvbSI6IkFQUCIsImV4cCI6MTcyMzk3NDg5MSwidXNlcklkIjoiODAxNzY1NiIsImlhdCI6MTcyMjc2NTI5MX0.znlxOp7PAObnlIsQ3DlHiH10r-zven_TkBEOerHl_j8',
+            'userId': '8017656',
+            'Accept-Language': 'zh-cn',
+            'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+            'Origin': 'https://hms.cignacmb.com',
+            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;hmsapp/5.24.10;HMS_APP_SESSIONID/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzaWduRGF0YSI6IjE2Rjg3NUVBM0RBNUQwMUMwRUEyN0NDNzA3NjU5REVEMzgwMTMwIiwibG9naW5UaW1lIjoiMTcyMjc2NTI5MTM4NSIsIm5iZiI6MTcyMjc2NTI5MSwiZXhwdCI6MTcyMjg1MTY5MTM4NSwiaXNzIjoiSldUIiwiZnJvbSI6IkFQUCIsImV4cCI6MTcyMzk3NDg5MSwidXNlcklkIjoiODAxNzY1NiIsImlhdCI6MTcyMjc2NTI5MX0.znlxOp7PAObnlIsQ3DlHiH10r-zven_TkBEOerHl_j8;',
+            'Referer': 'https://hms.cignacmb.com/hms-act/nurturing_game_reset/index.html?appVersion=5.24.10&token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzaWduRGF0YSI6IjE2Rjg3NUVBM0RBNUQwMUMwRUEyN0NDNzA3NjU5REVEMzgwMTMwIiwibG9naW5UaW1lIjoiMTcyMjc2NTI5MTM4NSIsIm5iZiI6MTcyMjc2NTI5MSwiZXhwdCI6MTcyMjg1MTY5MTM4NSwiaXNzIjoiSldUIiwiZnJvbSI6IkFQUCIsImV4cCI6MTcyMzk3NDg5MSwidXNlcklkIjoiODAxNzY1NiIsImlhdCI6MTcyMjc2NTI5MX0.znlxOp7PAObnlIsQ3DlHiH10r-zven_TkBEOerHl_j8',
+        }
+
+        data = {
+            'treasureBoxNum': '1',
+        }
+
+        url = 'https://hms.cignacmb.com/activity/cignaInvestment/lottery'
+        response_json = requests.post(url, headers=headers, data=data).json()
+        if response_json['statusCode'] == '0':
+            prizeName = response_json['data']['prizeName']
+            print(f'✅等级宝箱抽奖成功 | 获得奖品：{prizeName}')
+        else:
+            print('❌等级宝箱抽奖失败, ', response_json['msg'])
 
     def main(self):
         # 登录
@@ -565,13 +600,11 @@ class ZSXN():
             time.sleep(random.randint(5, 10))
 
             # 每日签到
-            # self.sign()
-            # time.sleep(random.randint(10, 15))
+            self.sign()
+            time.sleep(random.randint(10, 15))
 
-            # 糯米转盘
-            # for i in range(self.lottery_count):
-            #     self.do_lottery()
-            #     time.sleep(random.randint(15, 20))
+            # 健康任务
+            self.healthy_task()
 
             # 一诺庄园
             self.do_candy_task()
@@ -580,14 +613,16 @@ class ZSXN():
             self.invest_candy()
             self.init_user_info()
 
-            self.healthy_task()
-
-
+            # 糯米转盘
+            for i in range(self.lottery_count):
+                self.do_lottery()
+                time.sleep(random.randint(15, 20))
 
 
 if __name__ == '__main__':
     env_name = 'ZSXN'
     tokenStr = os.getenv(env_name)
+    tokenStr = "oSWTism3mzZrIE-uNevnUSFWejsA#okz730KhDfJCGeUuenf6Jk8iFNVw#17895421565"
     if not tokenStr:
         print(f'⛔️未获取到ck变量：请检查变量 {env_name} 是否填写')
         exit(0)
