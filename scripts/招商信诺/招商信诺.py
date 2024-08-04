@@ -16,6 +16,8 @@ const $ = new Env("招商信诺");
 20240804 增加等级宝箱抽奖、转盘抽奖
 --------------------------
 """
+print("维护中")
+exit(0)
 import json
 import os
 import random
@@ -622,7 +624,6 @@ class ZSXN():
 if __name__ == '__main__':
     env_name = 'ZSXN'
     tokenStr = os.getenv(env_name)
-    tokenStr = "oSWTism3mzZrIE-uNevnUSFWejsA#okz730KhDfJCGeUuenf6Jk8iFNVw#17895421565"
     if not tokenStr:
         print(f'⛔️未获取到ck变量：请检查变量 {env_name} 是否填写')
         exit(0)
