@@ -12,14 +12,13 @@ const name = '荷叶健康'
 const $ = new Env(name);
 const notify = $.isNode() ? require('./sendNotify') : '';
 let ckName = "heyeHealth";
-let envSplitor = ["&", "\n"]; //多账号分隔符
-let strSplitor = "#"; //多变量分隔符
 let userIdx = 0;
 let userList = [];
 class Task {
     constructor(str) {
         this.index = ++userIdx;
-        this.ck = str.split(strSplitor)[0]; //单账号多变量分隔符
+        let user = JSON.parse(str);
+        this.ck = user.token;
         this.ckStatus = true;
         //定义在这里的headers会被get请求删掉content-type 而不会重置
         this.taskIdList = []
@@ -310,20 +309,27 @@ class Task {
  * @returns
  */
 async function checkEnv() {
-    let userCookie = ($.isNode() ? process.env[ckName] : $.getdata(ckName)) || "";
+    let userCookie = ($.isNode() ? process.env[ckName] : $.getdata(ckName)) || [];
     if (userCookie) {
-        let e = envSplitor[0];
-        for (let o of envSplitor)
-            if (userCookie.indexOf(o) > -1) {
-                e = o;
-                break;
+        try {
+            let userArray = JSON.parse(userCookie);
+            for (let user of userArray) {
+                if (user.id && user.token) {
+                    userList.push(new Task(JSON.stringify(user)));
+                } else {
+                    console.log(`用户对象缺少 id 或 token: ${JSON.stringify(user)}`);
+                }
             }
-        for (let n of userCookie.split(e)) n && userList.push(new Task(n));
+        } catch (e) {
+            console.log(`解析 JSON 失败: ${e}`);
+            return;
+        }
     } else {
-        console.log(`未找到CK【${ckName}】`);
+        console.log(`未找到 CK【${ckName}】`);
         return;
     }
-    return console.log(`共找到${userList.length}个账号`), true; //true == !0
+    console.log(`共找到 ${userList.length} 个账号`);
+    return true; // true == !0
 }
 
 const fs = require('fs');

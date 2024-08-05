@@ -4,20 +4,16 @@
 入口：微信小程序->滴滴出行->首页->领车费->免费领水果（中间左右滑动那里）
 或者：滴滴出行APP->免费领水果
 
-变量：
-ddgyToken: 必填，账号token，多账号换行或者@隔开，格式uid&token。uid可随便填，主要是方便区分账号用
+变量：ddgyToken，格式uid&token
+捉任意game.xiaojukeji.com的包，把请求里面的D-Header-T用填到变量ddgyToken
+多账号换行或者@隔开
 
-
-青龙：捉任意game.xiaojukeji.com的包，把请求里面的D-Header-T用填到变量ddgyToken
-uid其实不重要，只是用来区分token所属的账号，方便重写。手动捉包的话uid随便填都可以
-多账号换行或者@隔开，重写多账号直接换号捉就行
+定时设置：每天的8点、16点和20点整
 export ddgyToken='uid&token'
-
-定时设置：
-每天的8点、16点和20点整
 cron: 28 0,8,12,18 * * *
 const $ = new Env('滴滴果园');
 """
+import json
 import os
 import requests
 import time
@@ -34,13 +30,7 @@ except Exception as e:
     print('小错误')
 
 
-def sign_ddgy():
-    env_name = 'DDGY'
-    token = os.getenv(env_name)
-    if not token:
-        print(f'⛔️未获取到ck变量：请检查变量 {env_name} 是否填写')
-        exit(0)
-    uid = 1
+def sign_ddgy(uid, token):
     msg = '=================================\n'
     msg += f'正在执行账号：{uid}\n'
     try:
@@ -225,4 +215,22 @@ def cxguosju(uid, token):
 
 
 if __name__ == '__main__':
-    sign_ddgy()
+    env_name = 'DDGY'
+    tokenStr = os.getenv(env_name)
+    if not tokenStr:
+        print(f'⛔️未获取到ck变量：请检查变量 {env_name} 是否填写')
+        exit(0)
+
+    try:
+        json_data = json.loads(tokenStr)
+        print(f"滴滴果园共获取到{len(json_data)}个账号")
+    except json.JSONDecodeError:
+        print('⛔️ JSON 解析失败，请检查变量格式是否正确')
+        exit(0)
+
+    for i, token_data in enumerate(json_data, start=1):
+        print(f"\n======== ▷ 第 {i} 个账号 ◁ ========")
+        token = token_data.get('token')
+        uid = token_data.get('id')
+        sign_ddgy(uid, token)
+        print("\n随机等待10-15s进行下一个账号")
