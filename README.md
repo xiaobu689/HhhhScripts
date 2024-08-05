@@ -15,7 +15,6 @@
 * https://github.com/xzxxn777/Surge.git
 * https://github.com/CHERWING/CHERWIN_SCRIPTS.git
 * https://github.com/yang7758258/ohhh154.git
-* https://github.com/huaji8/huajiScript.git
 
 
 
