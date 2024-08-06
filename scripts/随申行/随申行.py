@@ -7,10 +7,10 @@
 格式： 任意请求头抓 Authorization 值
 
 ---------------------------------
-20240717 增加自动领养宠物
-20240610 新增每日签到、浏览商场任务
-20240601 抽奖活动下线移除
 20240529 新增当日首次登陆、游戏成就分享
+20240601 抽奖活动下线移除
+20240610 新增每日签到、浏览商场任务
+20240717 增加自动领养宠物
 ---------------------------------
 定时设置：每天1次，时间随意
 cron: 0 0 * * *
@@ -424,7 +424,6 @@ class SSX():
         self.ssx_sign()
         time.sleep(random.randint(5, 10))
 
-        print(f"======== ▷ 宠物喂养 ◁ ========")
         self.user_game_list()
         self.get_game_info()
         time.sleep(random.randint(7, 15))
@@ -438,11 +437,14 @@ class SSX():
         self.game_share()
         time.sleep(random.randint(5, 15))
 
+        self.query_mall()
+        time.sleep(random.randint(5, 10))
+
         self.receive()
         time.sleep(random.randint(5, 10))
 
-        self.xl_subway_ticket_list()
-        time.sleep(random.randint(5, 10))
+        # self.xl_subway_ticket_list()
+        # time.sleep(random.randint(5, 10))
 
 
 if __name__ == '__main__':

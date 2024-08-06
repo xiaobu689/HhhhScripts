@@ -8,7 +8,7 @@
  * cron: 45 6 * * *
  * const $ = new Env("云筑工匠");
  */
-
+return
 const name = "云筑工匠"
 const $ = new Env(name)
 const notify = require('./sendNotify');

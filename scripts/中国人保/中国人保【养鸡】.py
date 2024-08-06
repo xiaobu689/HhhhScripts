@@ -2,7 +2,7 @@
 中国人保-养鸡
 
 变量名: ZGRBYJ
-cron: 35 7,23 * * *
+cron: 35 7,12,23 * * *
 const $ = new Env("中国人保-养鸡");
 """
 import os
@@ -59,9 +59,8 @@ class RUN():
 
     # 领取所有饲料
     def chicken_collect_tall(self):
-        response = requests.post('https://m.picclife.cn/chicken-api/p/chicken/tashcollectall',
-                                     headers=self.mHeaders)
-        print(response.text)
+        url = 'https://m.picclife.cn/chicken-api/p/chicken/tashcollectall'
+        response = requests.post(url, headers=self.mHeaders)
         response_json = response.json()
         if response_json['code'] == 200:
             print(f'🐔✅领取全部饲料成功')
@@ -70,8 +69,8 @@ class RUN():
 
     # 收鸡蛋
     def chicken_collect_egg(self):
-        response_json = requests.post('https://m.picclife.cn/chicken-api/p/chicken/collectegg',
-                                     headers=self.mHeaders).json()
+        url = 'https://m.picclife.cn/chicken-api/p/chicken/collectegg'
+        response_json = requests.post(url, headers=self.mHeaders).json()
         if response_json['code'] == 200:
             print(f'🐔{response_json["data"]["name"]} | ✅收鸡蛋成功')
         else:
@@ -186,7 +185,6 @@ class RUN():
             'mission_code': '33',
         }
         response = requests.post('https://m.picclife.cn/ebs-api/wap/api/order/chicken-run/mission', headers=self.mHeaders, json=json_data)
-        print(response.text)
         response_json = response.json()
         if response_json["success"]:
             print(f'🐔浏览保险产品成功')
@@ -211,7 +209,6 @@ class RUN():
                 'tashId': task_id,
             }
             response_json = requests.post('https://m.picclife.cn/chicken-api/p/chicken/tashcollect', params=params, headers=self.mHeaders).json()
-            print("response2_json=", response_json)
             if response_json["code"] == 200:
                 print(f'🐔收饲料成功')
             else:
@@ -223,7 +220,6 @@ class RUN():
             'foodQuantity': '180',
         }
         response = requests.post('https://m.picclife.cn/chicken-api/p/chicken/addfeedfood_v3', params=params, headers=self.mHeaders)
-        print("response3=", response.text)
         response_json = response.json()
         if response_json["code"] == 200:
             print(f'🐔喂鸡成功')
@@ -231,7 +227,7 @@ class RUN():
             foodHour = response_json["result"]["foodHour"]
             foodCount = response_json["result"]["foodCount"]
             leftfood = response_json["result"]["leftfood"]
-            print(f'🐔剩余可用饲料: {foodCount} | 鸡盆剩余饲料：{leftfood} | 预计{foodHour}吃完')
+            print(f'🐔剩余可用饲料: {foodCount} | 鸡盆剩余饲料：{leftfood} | 预计{foodHour}小时吃完')
         else:
             print(f'❌喂鸡失败 | {response_json["message"]}')
 
@@ -282,7 +278,6 @@ class RUN():
             userName = response_json["result"]["userName"]
             coinCount = response_json["result"]["coinCount"]
             msg = f'🐔主人: {userName} | 金币: {coinCount}个'
-            print(msg)
             if coinCount >= 600:
                 send("中国人保养鸡金币达标通知", msg)
             return True
@@ -336,7 +331,6 @@ class RUN():
 if __name__ == '__main__':
     env_name = 'ZGRBYJ'
     user_id = os.getenv(env_name)
-    user_id = 'b7617974424ef68e693237b27fd2e244'
     if not user_id:
         print(f'⛔️未获取到ck变量：请检查变量 {env_name} 是否填写')
         exit(0)

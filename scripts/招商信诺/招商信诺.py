@@ -581,10 +581,11 @@ class ZSXN():
             'flag': '00',
         }
         url = 'https://hms.cignacmb.com/health/app/healthTasks/queryReceiveTaskDetails'
-        response_json = requests.post(url, headers=headers, data=data).json()
+        response = requests.post(url, headers=headers, data=data)
+        response_json = response.json()
         # 获取当前日期
         current_date = datetime.now().strftime("%Y/%m/%d")
-        if response_json['statusCode'] == '0':
+        if response_json['statusCode'] == '0' and response_json["data"] is not None:
             healthTaskDrawsNumber = response_json['data']['healthTaskDrawsNumber']
             healthTaskName = response_json['data']['healthTaskName']
             healthTaskDesc = response_json['data']['healthTaskDesc']
@@ -619,8 +620,9 @@ class ZSXN():
             'Sec-Fetch-Mode': 'cors',
         }
         url = 'https://hms.cignacmb.com/health/app/healthTasks/syncUserTaskStep'
-        response_json = requests.get(url, headers=headers).json()
-        if response_json["status_code"] == '0':
+        response = requests.get(url, headers=headers)
+        response_json = response.json()
+        if response_json["statusCode"] == '0':
             print('✅步数同步成功')
         else:
             print('❌步数同步失败, ', response_json['msg'])
@@ -647,7 +649,7 @@ class ZSXN():
         }
         url = 'https://member.cignacmb.com/shop/member/interface/initScoreCoin'
         response_json = requests.post(url, headers=headers, data=data).json()
-        if response_json["respCode"] == '0':
+        if response_json["respCode"] == '00':
             remain_count = response_json["respData"]["remainCount"]
             self.guess_coin_count = remain_count
         else:
@@ -681,7 +683,7 @@ class ZSXN():
         }
         url = 'https://member.cignacmb.com/shop/member/interface/betScoreCoin'
         response_json = requests.post(url, headers=headers, data=data).json()
-        if response_json["respCode"] == '0':
+        if response_json["respCode"] == '00':
             rewardScore = int(response_json["respData"]["rewardScore"])
             print(f'✅猜硬币成功|获得{rewardScore}糯米')
         else:
@@ -694,41 +696,43 @@ class ZSXN():
             time.sleep(random.randint(5, 10))
 
             # 健康任务
+            print(f"\n======== ▷ 健康任务 ◁ ========")
             self.healthy_task()
             time.sleep(random.randint(5, 10))
 
             # 一诺庄园
+            print(f"\n======== ▷ 一诺庄园 ◁ ========")
             self.do_candy_task()
             time.sleep(random.randint(5, 10))
-
             # 投喂糖果
             self.invest_candy()
             self.init_user_info()
             time.sleep(random.randint(5, 10))
 
             # 步数挑战
-            self.sync_user_step()
-            self.keep_step_challenge()
-            time.sleep(random.randint(5, 10))
+            print(f"\n======== ▷ 步数挑战 ◁ ========")
+            # self.sync_user_step()
+            # self.keep_step_challenge()
+            # time.sleep(random.randint(5, 10))
 
             # 猜硬币
+            print(f"\n======== ▷ 每天猜硬币 ◁ ========")
             self.init_guess_coin()
-            for i in range(self.guess_coin_count):
+            for i in range(int(self.guess_coin_count)):
                 self.guess_coin()
                 time.sleep(random.randint(5, 10))
 
             # 糯米转盘(攒一次5连抽吧)
-            if self.total_score >= 495:
-                for i in range(self.lottery_count):
+            print(f"\n======== ▷ 糯米大转盘 ◁ ========")
+            if int(self.total_score) >= 495:
+                for i in range(int(self.lottery_count)):
                     self.do_lottery()
                     time.sleep(random.randint(5, 10))
-
 
 
 if __name__ == '__main__':
     env_name = 'ZSXN'
     tokenStr = os.getenv(env_name)
-    tokenStr = 'oSWTism3mzZrIE-uNevnUSFWejsA#okz730KhDfJCGeUuenf6Jk8iFNVw#17895421565'
     if not tokenStr:
         print(f'⛔️未获取到ck变量：请检查变量 {env_name} 是否填写')
         exit(0)
