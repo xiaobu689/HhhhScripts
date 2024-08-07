@@ -47,6 +47,7 @@ class PSKJ():
             return
         response_json = response.json()
         if response_json['status'] == 0:
+            save_result_to_file("success", self.name)
             print(f'🐶账号: {response_json["data"]["member_truename"]}')
         else:
             save_result_to_file("error", self.name)
@@ -116,11 +117,9 @@ class PSKJ():
             self.user_draw_score()
 
 
-
 if __name__ == '__main__':
     env_name = 'DLS_TOKEN'
     tokenStr = os.getenv(env_name)
-    tokenStr = '6fab4ffbae1ed9c2880961758a8cb8e4'
     if not tokenStr:
         print(f'⛔️未获取到ck变量：请检查变量 {env_name} 是否填写')
         exit(0)

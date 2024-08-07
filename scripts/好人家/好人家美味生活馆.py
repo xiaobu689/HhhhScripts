@@ -9,6 +9,7 @@ export HRJ_TOKEN ='你抓包的X-WX-Token'
 const $ = new Env("好人家美味生活馆");
 cron 10 6,15 * * *
 """
+import json
 import os
 import random
 import re
@@ -290,15 +291,23 @@ class HRJ():
 if __name__ == '__main__':
     env_name = 'HRJ_TOKEN'
     tokenStr = os.getenv(env_name)
-    tokenStr = '157e4c0a14e70a2e316757fa539a5941fba41cd0a6ec98ad34d5c46ea55ee2434d162579e872afb1c27410bfda91cc6d'
     if not tokenStr:
         print(f'⛔️未获取到ck变量：请检查变量 {env_name} 是否填写')
         exit(0)
-    tokens = re.split(r'&', tokenStr)
-    print(f"好人家共获取到{len(tokens)}个账号")
-    for i, token in enumerate(tokens, start=1):
+
+    try:
+        json_data = json.loads(tokenStr)
+        print(f"共获取到{len(json_data)}个账号")
+    except json.JSONDecodeError:
+        print('⛔️ JSON 解析失败，请检查变量格式是否正确')
+        exit(0)
+
+    for i, token_data in enumerate(json_data, start=1):
         print(f"\n======== ▷ 第 {i} 个账号 ◁ ========")
+        token = token_data.get('token')
+        user_id = token_data.get('id')
+        # 开始任务
         HRJ(token).main()
-        print("\n随机等待30-60s进行下一个账号")
-        time.sleep(random.randint(30, 60))
+        print("\n随机等待10-15s进行下一个账号")
+        time.sleep(random.randint(10, 15))
         print("----------------------------------")

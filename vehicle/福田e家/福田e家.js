@@ -3,7 +3,7 @@
  *
  * 变量名: FTEJ
  * 格式：账号#密码
- * cron: 19 9 * * *
+ * cron: 19 9,15,22 * * *
  * const $ = new Env("福田e家");
  * 偶尔会报错  多定时两次就好了
  * -------------------------------------------
@@ -47,7 +47,7 @@ class UserInfo {
             let urlObject = popu(url, h, body)
             await httpRequest('post', urlObject)
             let result = httpResult;
-            // console.frida_log(result)
+            // console.log(result)
             if (result.code == 200) {
                 console.log(`账号 ${this.user} 登录成功`)
                 saveResultToFile("success", name)
@@ -58,9 +58,9 @@ class UserInfo {
                 if (result.data.signIn == "未签到") {
                     await this.sign()
                 }
-                //  await $.wait(3000);
+                await $.wait(15000);
                 await this.getTaskList()//每日关注
-                // await $.wait(3000);
+                await $.wait(15000);
                 await this.grxx()
             } else {
                 console.log(`账号 ${this.user} 登录失败 `)
@@ -95,26 +95,31 @@ class UserInfo {
             if (result.code == 200) {
                 if (result.data[4].completeNum == 0) {
                     await this.sign()//签到
+                    await $.wait(15000);
                 } else if (result.data[4].completeNum == 1) {
                     console.log(`账号 ${this.user} ${result.data[4].ruleName} 已完成 `)
                 }
                 if (result.data[5].completeNum == 0) {
                     await this.fx()//分享
+                    await $.wait(10000);
                 } else if (result.data[5].completeNum == 1) {
                     console.log(`账号 ${this.user} ${result.data[6].ruleName} 已完成 `)
                 }
                 if (result.data[6].completeNum == 0) {
                     await this.topicList()//发帖
+                    await $.wait(15000);
                 } else if (result.data[6].completeNum == 1) {
                     console.log(`账号 ${this.user} ${result.data[6].ruleName} 已完成 `)
                 }
                 if (result.data[8].completeNum == 0) {
                     await this.follow2nd()//关注
+                    await $.wait(10000);
                 } else if (result.data[8].completeNum == 1) {
                     console.log(`账号 ${this.user} ${result.data[8].ruleName} 已完成 `)
                 }
                 if (result.data[7].completeNum == 0) {
                     await this.comment2nd()//评论
+                    await $.wait(20000);
                 } else if (result.data[7].completeNum == 1) {
                     console.log(`账号 ${this.user} ${result.data[7].ruleName} 已完成 `)
                 }

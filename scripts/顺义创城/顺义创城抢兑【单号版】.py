@@ -80,7 +80,6 @@ def get_success_count():
     # 删除旧文件
     today_date = datetime.now().strftime("%Y%m%d")
     file_name = f'sycc_tx_success_{today_date}.csv'
-    print(file_name)
     files = os.listdir('.')
     files_to_delete = [f for f in files if 'sycc_tx_success' in f and today_date not in f]
     for f in files_to_delete:
@@ -111,6 +110,7 @@ async def main():
 
     sycc_token = tokens[count]
     token, phone, millisecond = sycc_token.split('#')
+    print(f"总账号数量:{len(tokens)}个 | 已有{count}个账号抢兑成功，开始第{count+1}个账号抢兑 | 本次抢兑账号:{phone}")
 
     now = datetime.now()
     if now.hour in [7, 11, 13]:
@@ -121,7 +121,7 @@ async def main():
 
     await trigger_at_specific_millisecond(target_hour, 59, 59, int(millisecond))
 
-    tasks = [cashout(token, phone) for _ in range(3)]
+    tasks = [cashout(token, phone) for _ in range(10)]
     results = await asyncio.gather(*tasks)
     success_flag = 0
     for result in results:

@@ -710,7 +710,7 @@ class ZSXN():
             time.sleep(random.randint(5, 10))
 
             # 步数挑战
-            print(f"\n======== ▷ 步数挑战 ◁ ========")
+            # print(f"\n======== ▷ 步数挑战 ◁ ========")
             # self.sync_user_step()
             # self.keep_step_challenge()
             # time.sleep(random.randint(5, 10))

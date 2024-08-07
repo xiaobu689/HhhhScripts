@@ -16,12 +16,6 @@
 const name = "统一快乐星球"
 const $ = new Env(name);
 const TongYi = ($.isNode() ? JSON.parse(process.env.TongYi) : $.getjson("TongYi")) || [];
-// const TongYi = [
-//     {
-//         "memberId": "骑狗跨大海",
-//         "token": "4626b4444ad5be058426bc103070b2d415bcfa6b8ccf1b02a5ca8530f66f45cf6f014b80584342a383977040aeb43919"
-//     }
-// ]
 let TongYi_Help = ($.isNode() ? process.env.TongYi_Help : $.getjson("TongYi_Help")) || [];
 let helpCodeArr = [11068728376, 11068885418, 11069284748, 10325418614, 11069577738, 10985794048, 11070138246, 11070140152, 11070141763]
 let notice = ''
@@ -34,7 +28,6 @@ let notice = ''
 })().catch((e) => { $.log(e) }).finally(() => { $.done({}); });
 
 async function main() {
-    console.log('作者：@xzxxn777\n频道：https://t.me/xzxxn777\n群组：https://t.me/xzxxn7777\n自用机场推荐：https://xn--diqv0fut7b.com\n')
     for (const item of TongYi) {
         token = item.token;
         memberId = item.memberId;

@@ -4,7 +4,7 @@
 抓任意包请求头 Access-Token
 变量名: DLS_TOKEN
 
-cron: 35 7 * * *
+cron: 38 11 * * *
 const $ = new Env("杜蕾斯");
 """
 import os
@@ -48,6 +48,10 @@ class DLS():
             print("获取用户信息失败")
             return
         response_json = response.json()
+        if response_json["status"] == 40001:
+            save_result_to_file("error", self.name)
+            print("token已过期")
+            return
         if response_json['code'] == 0:
             save_result_to_file("success", self.name)
             mobile = response_json["data"]["userInfo"]["mobile"]

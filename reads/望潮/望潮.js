@@ -49,13 +49,12 @@ async function main() {
         console.log(signature_key)
         console.log("获取code")
         let credential_auth = await passportPost('/web/oauth/credential_auth')
-        console.log("-------credential_auth=", credential_auth)
+        push_content = `${name}|${phone_number}`
         if (credential_auth.code != 0) {
             console.log(credential_auth.message)
-            saveResultToFile("error", name)
+            saveResultToFile("error", push_content)
             continue
         }
-        push_content = `${name}|${phone_number}`
         saveResultToFile("success", push_content)
         let code = credential_auth.data.authorization_code.code;
         console.log("登录")
@@ -169,6 +168,7 @@ async function main() {
         let detail = await commonGet('/api/user_mumber/account_detail')
         console.log(`拥有积分：${detail.data.rst.total_integral}\n`)
         notice += `用户：${phone_number} 积分：${detail.data.rst.total_integral}\n`
+        console.log("————————————")
     }
     if (notice) {
         $.msg($.name, '', notice);
