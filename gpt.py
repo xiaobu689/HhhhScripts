@@ -69,7 +69,7 @@ def gpt_35_api_stream(messages: list):
             print(chunk.choices[0].delta.content, end="")
 
 # if __name__ == '__main__':
-#     # 非流式调用
-#     gpt_35_api(message)
-#     # 流式调用
-#     # gpt_35_api_stream(messages)
+    # 非流式调用
+    # gpt_35_api(message)
+    # 流式调用
+    # gpt_35_api_stream(messages)

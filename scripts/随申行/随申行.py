@@ -8,9 +8,9 @@
 
 ---------------------------------
 20240529 新增当日首次登陆、游戏成就分享
-20240601 抽奖活动下线移除
 20240610 新增每日签到、浏览商场任务
 20240717 增加自动领养宠物
+20240808 增加浏览兜豆商城任务
 ---------------------------------
 定时设置：每天1次，时间随意
 cron: 0 0 * * *
@@ -204,110 +204,6 @@ class SSX():
         self.msg += msg
         print(msg)
 
-    def query_address(self):
-        msg = ''
-        url = 'https://dualstack-restios.amap.com/v5/place/text'
-        data = {
-            'location': '121.306507,31.136091',
-            'page_num': '1',
-            'region': '上海市',
-            'output': 'json',
-            'keywords': '闵浦新苑二村',
-            'city_limit': 'false',
-            'sortrule': 'weight',
-            'language': 'zh',
-            'key': 'c358c360816bf9feebd70e46b52f3937',
-            'show_fields': 'children,business,indoor,navi,photos',
-            'page_size': '15',
-            'scode': '55c5e446c409007de1e89b8c84342db0',
-            'ts': '1715663958518'
-        }
-        requests.post(url, headers=self.gpsHeaders, data=data)
-
-    def finish_query_address(self):
-        json_data = {
-            'language': 'zh-cn',
-            'behaviorType': 10,
-        }
-        url = 'https://api.shmaas.net/actbizgtw/v1/reportUserBehavior'
-        response = requests.post(url, headers=self.headers, json=json_data).json()
-        if response['errCode'] == 0:
-            msg = f'✅联程规划完成，兜豆：+{response["data"]["rewardValue"]}\n'
-        else:
-            msg = f'❌联程规划未完成，{response["errMsg"]}\n'
-
-        self.msg += msg
-        print(msg)
-
-    def sign(self):
-        json_data = {
-            'uid': self.uid,
-            'activityId': '55ShoppingFestival',
-            'taskType': 1,
-        }
-        url = 'https://api.shmaas.net/actbizgtw/v1/completeActivityTask'
-        response = requests.post(url, headers=self.headers, json=json_data).json()
-        if response['errCode'] == 0:
-            msg = f'✅签到成功，抽奖次数：+1\n'
-        else:
-            msg = f'😄{response["errMsg"]}\n'
-        self.msg += msg
-        print(msg)
-
-    # 抽奖
-    def lottery(self):
-        url = 'https://api.shmaas.net/actbizgtw/v1/openActivityUserLuckBag'
-        data = f'{{"uid":"{self.uid}","activityId":"55ShoppingFestival"}}'
-        response = requests.post(url, headers=self.headers, data=data).json()
-        msg = f'-----------------------------------\n'
-        if response['errCode'] == 0:
-            msg = f'✅抽奖成功，获得：{response["data"]["userLuckBagViewInfo"][0]["awardName"]}\n'
-        elif response['errCode'] == -1961003:
-            msg += f'❌抽奖失败，没有抽奖次数了!\n'
-        else:
-            msg += f'❌抽奖失败, cookie可能已失效！， {response["errMsg"]}\n'
-
-        self.msg += msg
-        print(msg)
-
-    def query_finsh_status(self):
-        json_data = {
-            'language': 'zh-cn',
-        }
-        url = 'https://api.shmaas.net/cap/app/queryLowCarbonHome'
-        response = requests.post(url, headers=self.headers, json=json_data).json()
-        # 0：未完成 1：已完成
-        if response['errCode'] == 0:
-            for i in response['data']['userActivityMessages']:
-                if "用户注册" in i["name"] or "用户实名" in i["name"] or "用户首单" in i["name"] or "打车出行" in i[
-                    "name"]:
-                    continue
-                if i["finishStatus"] == 1:
-                    self.needReceiveBean += i["rewardValue"]
-        else:
-            msg = f'❌获取任务列表信息失败， cookie可能失效：{response["errMsg"]}'
-            print(msg)
-
-    def game_share(self):
-        json_data = {
-            'sceneValue': 'game',
-            'language': 'zh-cn',
-            'behaviorType': 6,
-        }
-        url = 'https://api.shmaas.net/actbizgtw/v1/reportUserBehavior'
-        response = requests.post(url, headers=self.headers, json=json_data)
-        if response and response.status_code == 200:
-            response_json = response.json()
-            if response_json['errCode'] == 0:
-                msg = f'✅游戏成就分享成功, 兜豆+{response_json["data"]["rewardValue"]}\n'
-            else:
-                msg = f'❌分享失败，{response_json["errMsg"]}'
-        else:
-            msg = f'❌分享失败'
-
-        self.msg += msg
-        print(msg)
-
     def today_first_login(self):
         json_data = {
             'language': 'zh-cn',
@@ -375,25 +271,6 @@ class SSX():
         self.msg += msg
         print(msg)
 
-    def query_mall(self):
-        json_data = {
-            'sourceId': 'activityPlay66e9b9acf94d0293',
-            'taskId': 11,
-            'browseAddress': '',
-        }
-        url = 'https://api.shmaas.net/actbizgtw/v1/report/browse'
-        response = requests.post(url, headers=self.headers, json=json_data)
-        if response and response.status_code == 200:
-            response_json = response.json()
-            if response_json['errCode'] == 0:
-                msg = f'✅浏览成功\n'
-            else:
-                msg = f'❌浏览失败，{response_json["errMsg"]}\n'
-        else:
-            msg = f'❌浏览失败\n'
-
-        self.msg += msg
-        print(msg)
 
     def ssx_sign(self):
         json_data = {
@@ -414,6 +291,19 @@ class SSX():
         self.msg += msg
         print(msg)
 
+    def view_mall(self):
+        json_data = {
+            'sourceId': 'activityPlay66e9b9acf94d0293',
+            'taskId': 57,
+            'browseAddress': '',
+        }
+        url = 'https://api.shmaas.net/actbizgtw/v1/report/browse'
+        response_json = requests.post(url, headers=self.headers, json=json_data).json()
+        if response_json['errCode'] == 0:
+            print(f'✅浏览兜豆商城成功')
+        else:
+            print(f'❌浏览兜豆商城失败，{response_json["errMsg"]}')
+
     def main(self):
         title = "随申行"
         self.getUserInfo()
@@ -430,14 +320,7 @@ class SSX():
         self.feed()
         time.sleep(random.randint(5, 10))
 
-        self.query_address()
-        self.finish_query_address()
-        time.sleep(random.randint(5, 10))
-
-        self.game_share()
-        time.sleep(random.randint(5, 15))
-
-        self.query_mall()
+        self.view_mall()
         time.sleep(random.randint(5, 10))
 
         self.receive()

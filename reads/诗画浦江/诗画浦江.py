@@ -98,14 +98,12 @@ class SHPJ():
     def task(self):
         url = 'https://vapp.tmuyun.com/api/user_mumber/numberCenter'
         headers = self.gen_headers(url)
-        print("headers=", headers)
         params = {
             'is_new': '1',
             'refer__1540': 'n4+xnDRD07itefxUx0v+bmYBe7uhixxTD',
         }
         response = requests.get(url, params=params, headers=headers)
         response_json = response.json()
-        print("response_json=", response_json)
         # 随机获取文章
         article_list = self.article_list()
         print(f"文章数量: {len(article_list)}")
@@ -185,9 +183,6 @@ class SHPJ():
         response_json = response.json()
         if response_json["code"] == 0:
             list = response_json["data"]["comment_list"]
-            # for item in list:
-            #     comment_id = item["id"]
-            #     content = item["content"]
             return list
         else:
             return []
@@ -201,7 +196,6 @@ class SHPJ():
             'tenantId': '14',
             'url_Path': '/webDetails/news'
         }
-        print("params=", params)
         response_json = requests.get(url, params=params, headers=headers).json()
         if response_json["code"] == 0:
             print(f"阅读成功")
@@ -381,7 +375,6 @@ class SHPJ():
             "Accept-Encoding": "gzip, deflate, br"
         }
         response = requests.post(url, headers=headers, data=body)
-        print("response=", response.text)
         if response.status_code == 200:
             response_json = response.json()
             if response_json["code"] == 0:

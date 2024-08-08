@@ -44,7 +44,6 @@ class SHCN():
         json_data = {}
         url = 'https://cnapi.shmedia.tech/media-basic-port/api/app/points/login/add'
         response = make_request(url, json_data=json_data, method='post', headers=self.headers)
-        # print(response)
         if response and response['code'] == 0:
             save_result_to_file("success", self.name)
             print("✅登录任务执行成功")

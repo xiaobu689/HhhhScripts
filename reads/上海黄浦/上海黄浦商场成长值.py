@@ -7,11 +7,13 @@ const $ = new Env("上海黄浦商场成长值");
 -------------------------------------
 20240708 增加成长值达标解锁兑换E卡通知
 20240701 增加评论剧目功能
+20240808 修复token有效期短问题
 -------------------------------------
 """
 import json
 import os
 import random
+import re
 import time
 import requests
 from urllib3.exceptions import InsecureRequestWarning, InsecurePlatformWarning
@@ -25,14 +27,14 @@ class SHHP_MALL():
     name = "上海黄浦商场成长值"
 
     def __init__(self, token):
-        self.token = token
+        self.token = token.split('#')[0]
         self.verify = False
         self.play_ids = []
         self.pre_growth = 0
         self.play_comment_ids = []
         self.headers = {
             'Host': 'hpweb.shmedia.tech',
-            'Authorization': token,
+            'Authorization': '',
             'Sec-Fetch-Site': 'same-origin',
             'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
             'Accept-Encoding': 'gzip, deflate, br',
@@ -40,11 +42,27 @@ class SHHP_MALL():
             'Accept': 'application/json, text/plain, */*',
             'Origin': 'https://hpweb.shmedia.tech',
             'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Rmt/HuangPu; Version/2.1.5',
-            'Referer': 'https://hpweb.shmedia.tech/show-life-front/?v=2.4',
-            'Content-Length': '0',
-            'Connection': 'keep-alive',
-            'Sec-Fetch-Dest': 'empty',
+            'Referer': 'https://hpweb.shmedia.tech/show-life-front/?v=2.4'
         }
+
+    def gen_access_token(self):
+        json_data = {
+            'token': self.token,
+            'siteId': '310101',
+        }
+        url = 'https://hpweb.shmedia.tech/show-life-api/front/auth/media'
+        response = requests.post(url, headers=self.headers, json=json_data)
+        print(response.text)
+        response_json = response.json()
+        if response_json["code"] == 0:
+            print("生成access_token成功")
+            self.headers["Authorization"] = f'Bearer {response_json["data"]["accessToken"]}'
+            save_result_to_file("success", self.name)
+            return True
+        else:
+            print(f'❌生成access_token失败 | {response_json["message"]}')
+            save_result_to_file("error", self.name)
+            return False
 
     def user_mall_info(self):
         url = 'https://hpweb.shmedia.tech/show-life-api/front/member/info'
@@ -103,20 +121,20 @@ class SHHP_MALL():
                     for i in range(task["dailyLimit"]):
                         self.play_share_complate()
                         time.sleep(random.randint(10, 15))
-                        # self.play_share_add()
-                        # time.sleep(random.randint(10, 15))
         else:
             print(f'❌获取任务列表失败，{response.text}')
 
     def play_search(self):
+        keywords = ['恋爱', '音乐', '戏曲', '话剧']
+        keyword = random.choice(keywords)
         json_data = {
             'pageNo': 1,
             'pageSize': 10,
             'type': 0,
-            'keywords': '恋爱',
+            'keywords': keyword,
         }
-        response = requests.post('https://hpweb.shmedia.tech/show-life-api/front/index/serch', headers=self.headers,
-                                 json=json_data)
+        url = 'https://hpweb.shmedia.tech/show-life-api/front/index/serch'
+        response = requests.post(url, headers=self.headers, json=json_data)
 
     # 热门剧目
     def search_play_list(self):
@@ -314,7 +332,8 @@ class SHHP_MALL():
                 send("上海黄浦成长值达标1200", message)
 
     def main(self):
-        if self.user_mall_info():
+        if self.gen_access_token():
+            self.user_mall_info()
             self.play_mall_task()
             self.user_growth_notify()
 
@@ -327,21 +346,12 @@ if __name__ == '__main__':
             8000成长值 - -解锁 - -6600积分兑换30元京东E卡
     ✨ 规则
     ''')
-    env_name = 'SHHP_MALL_TOKEN'
+    env_name = "SHHP_TOKEN"
     tokenStr = os.getenv(env_name)
-    if not tokenStr:
-        print(f'⛔️未获取到ck变量：请检查变量 {env_name} 是否填写')
-        exit(0)
-    try:
-        json_data = json.loads(tokenStr)
-        print(f"共获取到{len(json_data)}个账号")
-    except json.JSONDecodeError:
-        print('⛔️ JSON 解析失败，请检查变量格式是否正确')
-        exit(0)
-
-    for i, token_data in enumerate(json_data, start=1):
+    tokens = re.split(r'&', tokenStr)
+    print(f"上海黄浦共获取到{len(tokens)}个账号")
+    for i, token in enumerate(tokens, start=1):
         print(f"\n======== ▷ 第 {i} 个账号 ◁ ========")
-        token = token_data.get('token')
         SHHP_MALL(token).main()
         print("\n随机等待30-60s进行下一个账号")
         time.sleep(random.randint(30, 60))
