@@ -113,7 +113,7 @@ async def main():
     print(f"总账号数量:{len(tokens)}个 | 已有{count}个账号抢兑成功，开始第{count+1}个账号抢兑 | 本次抢兑账号:{phone}")
 
     now = datetime.now()
-    if now.hour in [7, 11, 13]:
+    if now.hour in [7, 11, 19]:
         target_hour = now.hour
     else:
         print("⚠️ 当前时间不在抢购时间段内。")

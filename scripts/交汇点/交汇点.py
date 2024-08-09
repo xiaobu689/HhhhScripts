@@ -61,7 +61,6 @@ class JHD():
         url = 'https://jhd.xhby.net/account/api/v1/account/members/have-sign-in'
         json_data = {}
         response_json = requests.post(url, headers=self.headers, json=json_data).json()
-        print(response_json)
         if response_json['code'] == 0:
             loginScore = response_json["data"]["loginScore"]
             print(f'✅签到成功 | 交子+{loginScore}')
@@ -109,15 +108,6 @@ class JHD():
                 print(f'❌回答错误|你的回答:{userAnswer}|正确答案:{rightAnswer}')
 
     def article_list(self):
-        headers = {
-            'Host': 'jhdapi.xhby.net',
-            'accept': '*/*',
-            'client-type': '0',
-            'devicetype': '0',
-            'user-agent': 'JHDNEWS/9.2.4 (iPhone; iOS 13.4.1; Scale/2.00)',
-            'accept-language': 'zh-Hans-CN;q=1',
-            'appid': '0',
-        }
         url = 'https://jhdapi.xhby.net/columns/650c23d4e4b0f1cc2bfd2b88/pages/0/stories.json'
         response = requests.get(url, headers=self.taskHeaders)
         response_json = response.json()
@@ -131,14 +121,12 @@ class JHD():
     def article_detail(self, article_id, article_column_id):
         url = f'https://jhdapi.xhby.net/content/{article_id}.json'
         response_json = requests.get(url, headers=self.taskHeaders).json()
-        print(response_json)
 
         json_data = {
             'columnid': article_column_id,
         }
         url1 = 'https://jhd.xhby.net/entry/api/v1/entry/member-entries/focusByColumn'
         response_json1 = requests.post(url1, headers=self.headers, json=json_data).json()
-        print(response_json1)
 
         url2 = 'https://jhd.xhby.net/interaction/api/v1/interaction/article-extnums/login/addClick'
         json_data = {
@@ -149,9 +137,7 @@ class JHD():
                 },
             ],
         }
-
         response_json2 = requests.post(url2, headers=self.headers, json=json_data).json()
-        print(response_json2)
         if response_json["code"] == 0 and response_json1["code"] == 400700004 and response_json2["code"] == 0:
             print(f'✅阅读文章成功')
         else:

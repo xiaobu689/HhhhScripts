@@ -1,12 +1,9 @@
 """
 上海杨浦E卡抢兑
 
-【单号版】
-点击积分兑换进入商场，抓商品列表请求头 Authorization
-变量名: SHYPKC_TOKEN
-
 --------------------------
 20240624 E卡每周五10点抢兑，面值：5元
+20240809 修复CK有效期短问题
 --------------------------
 
 cron: 58 9 * * 5
@@ -15,9 +12,12 @@ const $ = new Env("上海杨浦E卡抢兑");
 import datetime
 import asyncio
 import os
+import re
 import time
 from datetime import datetime
 import aiohttp
+import requests
+from common import save_result_to_file
 from sendNotify import send
 
 
@@ -29,6 +29,41 @@ async def trigger_at_specific_millisecond(hour, minute, second, millisecond):
         if current_time >= target_time:
             break
         await asyncio.sleep(0)  # 让出控制权给其他任务
+
+
+def mall_login(token):
+    headers = {
+        'Host': 'mall-api.shmedia.tech',
+        'Accept': 'application/json, text/plain, */*',
+        'Sec-Fetch-Site': 'same-site',
+        'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
+        'Sec-Fetch-Mode': 'cors',
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+        'Origin': 'https://mall-mobile.shmedia.tech',
+        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148Rmt/Yangpu; Version/2.2.3',
+        'Referer': 'https://mall-mobile.shmedia.tech/',
+        'Connection': 'keep-alive',
+        'Sec-Fetch-Dest': 'empty',
+    }
+    data = {
+        'siteId': '310110',
+        'token': token,
+        'target': 'media',
+    }
+    url = 'https://mall-api.shmedia.tech/member-service/passport/media/app/login'
+    response = requests.post(url, headers=headers, data=data)
+    if not response or response.status_code != 200:
+        print("❌商场登录失败")
+        save_result_to_file("error", "上海杨浦E卡抢兑")
+        return ''
+    else:
+        response_json = response.json()
+        mobile = response_json["mobile"]
+        access_token = response_json["access_token"]
+        save_result_to_file("success", "上海杨浦E卡抢兑")
+        print(f'✅商场登录成功：{mobile}')
+
+        return access_token
 
 
 async def exchange(token):
@@ -57,15 +92,13 @@ async def exchange(token):
     base_url = 'https://mall-api.shmedia.tech/trade-service/trade/carts/buy'
     url = f"{base_url}?{'&'.join(f'{k}={v}' for k, v in params.items())}"
     tasks = []
-    start_time = time.time()  # 记录开始发送请求的时间
+    start_time = time.time()
     async with aiohttp.ClientSession() as session:
         try:
             async with session.post(url, headers=headers) as response:
-                # 计算接收响应的时间
                 end_time = time.time()
-                end_response = datetime.now()  # 记录收到响应的当前时间
+                end_response = datetime.now()
                 duration_ms = (end_time - start_time) * 1000
-
                 data = await response.json()
                 if data["code"] == '0':
                     message = f"✅ 抢兑成功 | {data['message']} | 耗时: {duration_ms:.2f} ms | 响应时间：{end_response.strftime('%H:%M:%S.%f')[:-3]}"
@@ -80,13 +113,17 @@ async def exchange(token):
 
 
 async def main():
-    messages = []  # 用于存储每次提现操作的消息
-    token = os.getenv('SHYPKC_TOKEN')
-    if not token:
-        print(f'⛔️未获取到ck变量：请检查变量 {token} 是否填写')
+    messages = []
+    env_name = 'SHYP_TOKEN'
+    token_str = os.getenv(env_name)
+    if not token_str:
+        print(f'⛔️未获取到ck变量：请检查变量 {env_name} 是否填写')
         return
+    tokens = re.split(r'&', token_str)
+    token = tokens[0].split('#')[0]
+    access_token = mall_login(token)
+
     now = datetime.now()
-    # 根据当前小时设置目标时间
     if now.hour in [9]:
         target_hour = now.hour
     else:
@@ -94,13 +131,13 @@ async def main():
         return
     await trigger_at_specific_millisecond(target_hour, 59, 59, 800)
 
-    tasks = [exchange(token) for _ in range(10)]
+    tasks = [exchange(access_token) for _ in range(10)]
     results = await asyncio.gather(*tasks)
     for result in results:
         messages.append(result)
 
     # 消息推送
-    send("上海杨浦抢兑结果通知", "\n".join(messages))
+    send("上海杨浦E卡抢兑结果通知", "\n".join(messages))
 
 
 if __name__ == '__main__':

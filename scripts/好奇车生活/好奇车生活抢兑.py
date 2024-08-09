@@ -53,13 +53,13 @@ async def exchange(account_id):
         'accountId': account_id,
     }
 
-    # 5.88元红包
-    # pointsMallCardId = '754493011522113536'
-    # exchangeNeedPoints = 888
+    # 1.08元红包
+    pointsMallCardId = '754492665391370240'
+    exchangeNeedPoints = 188
 
     # 18元京东E卡
-    pointsMallCardId = '792556957722198016'
-    exchangeNeedPoints = 1800
+    # pointsMallCardId = '792556957722198016'
+    # exchangeNeedPoints = 1800
 
     exchangeCount = 1
     exchangeType = 0

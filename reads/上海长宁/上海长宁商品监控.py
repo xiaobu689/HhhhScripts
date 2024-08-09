@@ -1,7 +1,7 @@
 """
 上海长宁商品库存监控
 
-cron: */55 * * * *
+cron: 0 21 * * *
 const $ = new Env("上海长宁商品库存监控");
 """
 import os
@@ -94,6 +94,7 @@ class SHCN():
 
 
     def can_change_gift(self):
+        print(f"\n======== ▷ 商品列表 ◁ ========")
         msgs = ''
         all_gift_list = []
         keywords_to_filter = ['帆布袋', 'U盘', '折叠伞', '笔记本', '惠润']
@@ -130,13 +131,13 @@ class SHCN():
                     gift_have_quantity = True
                     msgs += msg
                     print(msg)
+        print(f"\n======== ▷ 可兑换商品列表 ◁ ========")
         if msgs != '' and int(self.total_scores) >= 10000:
-            send('上海长宁商品库存监控', msgs)
+            print("达标提醒：积分已满10000")
+            # send('上海长宁商品库存监控', msgs)
         elif gift_have_quantity > 0:
-            print(f'-------------------------------------------------------')
             print('😢商品有库存，你积分不足，再等等吧！')
         else:
-            print(f'-------------------------------------------------------')
             print('😢所有商品均无库存，再等等吧！')
 
     def goods_detail(self, goods_id):
@@ -168,8 +169,11 @@ if __name__ == '__main__':
         exit(0)
     tokens = re.split(r'&', tokenStr)
     print(f"上海长宁商场共获取到{len(tokens)}个账号")
-    for i, account_info in enumerate(tokens[0], start=1):
-        print(f"\n======== ▷ 第 {i} 个账号 ◁ ========")
-        SHCN(account_info).main()
-        print("\n随机等待30-60s进行下一个账号")
-        time.sleep(random.randint(10, 15))
+    for i, account_info in enumerate(tokens, start=1):
+        if i == 1:
+            print(f"\n======== ▷ 第 {i} 个账号 ◁ ========")
+            SHCN(account_info).main()
+            print("\n随机等待30-60s进行下一个账号")
+            time.sleep(random.randint(10, 15))
+
+

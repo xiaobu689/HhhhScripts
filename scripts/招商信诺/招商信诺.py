@@ -8,7 +8,7 @@
 变量值：unionid#miniopenid#mobile
 多账号&连接
 
-cron: 0 12,21 * * *
+cron: 0 0,8 * * *
 const $ = new Env("招商信诺");
 
 --------------------------
@@ -165,7 +165,6 @@ class ZSXN():
             headers=headers,
             data=data,
         )
-        print(response.text)
         if not response or response.status_code != 200:
             print("抽奖异常：", response.text)
             return
