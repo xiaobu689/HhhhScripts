@@ -104,6 +104,61 @@ class SSX():
         else:
             save_result_to_file("error", self.name)
 
+    def receive_all_credit(self):
+        headers = {
+            'Host': 'r.shmaas.net',
+            'X-Saic-AppId': 'maas_car',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ1aWQiOiJDYjE4NDM3ZGM3ZjZiNDVjMTgxOWMyNWQ5OGJmOGE0ZmMiLCJkZXZpY2VJZCI6Ikd6Y3Rabjg0NTBNU0hQODVQQk1mbnBNWXRiUlJBVGZNIiwiZXhwaXJlSW4iOjMxMjc2MzI3NTc4OTYyMiwiY3JlYXRlVGltZSI6MTcyMzI3NTc4OTYyMiwicGxhdGZvcm1Db2RlIjoiaDUiLCJhcHBJZCI6Im1hYXNfY2FyIiwiY2hhbm5lbENvZGUiOiJtYWFzIiwiYWNjb3VudE5hbWUiOiJBVVRIX0g1X1RJQ0tFVF9mNWIzOTIxODhiZmI0NzkxYmMwMGY5YjE0NmUwZGViMyIsImFjY291bnRUeXBlIjoiMTUiLCJwcm9kdWN0SWQiOjAsImVrIjoiIiwidWlkVHlwZSI6MSwidGFnIjoyfQ.m2yTPummQ7N4MT4lbFN6MLDyEtdFtMXmvUlUc5BXInBP1tHetgsmsFV_sjilHqF9md7kGecHTAYaNklP2ozLvwJNpjVmrtvQsNwhqpJ_RCwfsnbCg7dOIw2bnW5EWHCPh5_kr5B7ttf15bftwwHJt3E6NnCcHSTjeZqEZcpRG4g',
+            'X-Saic-Channel': 'maas',
+            'Sec-Fetch-Site': 'cross-site',
+            'X-Saic-Device-Id': 'GzctZn8450MSHP85PBMfnpMYtbRRATfM',
+            'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
+            'Sec-Fetch-Mode': 'cors',
+            'Content-Type': 'application/json',
+            'Origin': 'https://www.shmaas.cn',
+            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 x-isapp=1&bundleId=cn.shmaas.maas',
+            'Referer': 'https://www.shmaas.cn/',
+            'Connection': 'keep-alive',
+            'X-Saic-Platform': 'h5',
+            'Sec-Fetch-Dest': 'empty',
+        }
+
+        json_data = [
+            {
+                'sys': {
+                    'dataId': 2908,
+                    'dataDesc': '领取兜豆组件-【一键领取】按钮点击',
+                    'dataExtra': '{"componentId":"receivepoint_cbc65687"}',
+                    'tag': '',
+                    'userid': 'Cb18437dc7f6b45c1819c25d98bf8a4fc',
+                    'channel': '',
+                    'sourceId': '',
+                    'osName': 'ios',
+                    'isapp': True,
+                    'deviceId': 'GzctZn8450MSHP85PBMfnpMYtbRRATfM',
+                    'timestamp': 1723275796267,
+                    'newDeviceId': '633EB41D5EEC41B1BA90E94C0A37D1D6',
+                    'appId': 'maas_car',
+                    'url': 'https://www.shmaas.cn/magic/dist/56ddf9d392c71a3ce2e0e2c69d26e4e1/index.html?needToken=1&language=zh-cn&ticket=AUTH_H5_TICKET_f5b392188bfb4791bc00f9b146e0deb3&appid=maas_car',
+                    'platform': 'h5',
+                    'hostPlatform': 'app',
+                    'hostPlatformKey': 'default',
+                    'serverType': 'prod',
+                    'cityCode': '310100',
+                    'module': 'tmagic',
+                },
+                'cus': {},
+            },
+        ]
+        url = 'https://r.shmaas.net/receive/samplingreceiver/receivedata'
+        response_json = requests.post(url, headers=headers, json=json_data).json()
+        if response_json['errCode'] == 0:
+            print(f'✅领取兜豆成功！')
+        else:
+            print(f'❌领取兜豆失败|{response_json["errMsg"]}')
+
+
     def receive(self):
         url = 'https://api.shmaas.net/cap/base/platform/receiveBubbleCredit'
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -323,7 +378,8 @@ class SSX():
         self.view_mall()
         time.sleep(random.randint(5, 10))
 
-        self.receive()
+        # self.receive()
+        self.receive_all_credit()
         time.sleep(random.randint(5, 10))
 
         # self.xl_subway_ticket_list()

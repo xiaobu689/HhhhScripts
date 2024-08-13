@@ -6,6 +6,9 @@
 
 cron: 15 7 * * *
 const $ = new Env("顺义创城");
+-----------------------------
+20240812 增加中奖现金消息推送
+-----------------------------
 """
 import os
 import random
@@ -14,6 +17,7 @@ import time
 import requests
 from urllib3.exceptions import InsecureRequestWarning, InsecurePlatformWarning
 from common import save_result_to_file
+from sendNotify import send
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
 
@@ -25,6 +29,7 @@ class SYCC():
         self.token = token
         self.issue_ids = []
         self.userId = 0
+        self.phone = ''
         self.headers = {
             'Accept': '*/*',
             'Accept-Language': 'zh-CN,zh;q=0.9',
@@ -77,6 +82,7 @@ class SYCC():
                 name = response_json['result']['weixinName']
                 phone = response_json["result"]["phone"]
                 score = response_json["result"]["score"]
+                self.phone = phone
                 self.userId = response_json["result"]["id"]
                 print(f'✅{name} | {phone} | {score}积分')
             else:
@@ -304,6 +310,10 @@ class SYCC():
                 )
                 if response.status_code == 200:
                     print(f"✅领取奖励 | {award} 已入账")
+                    if "元" in award:
+                        content = f'{self.phone}|中奖{award}|已自动发放至微信'
+                        title = f'顺义创城中奖{award}'
+                        send(title, content)
         else:
             print("未知错误，赶紧看看吧，", response.text)
 

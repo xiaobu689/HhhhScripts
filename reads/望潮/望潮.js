@@ -5,7 +5,9 @@
  * 变量格式：账号1#密码1&账号2#密码2
  * cron: 10 9 * * *
  * const $ = new Env("望潮");
- * 
+ * ---------------------------------
+ * 20240809 增加代理配置，不使用代理，把useProxy置为false
+ * ---------------------------------
  */
 const name = '望潮'
 const $ = new Env(name)
@@ -21,6 +23,9 @@ let clientId = '10019'
 let signatureSalt = "FR*r!isE5W"
 let sessionId = ''
 let notice = ''
+let globalProxyServer = ''; // 初始化全局变量
+let useProxy = true; // 控制是否使用代理
+const { pinzanProxy } = require('./pinzan_proxy');
 !(async () => {
     await main();
 })().catch((e) => { $.log(e) }).finally(() => { $.done({}); });
@@ -29,6 +34,12 @@ async function main() {
     Utils = await loadUtils();
     let arr = WangChao.split("&");
     for (const item of arr) {
+        if (useProxy && item !== accounts[0]) {
+            console.log("🌐本次任务使用代理");
+            globalProxyServer = await pinzanProxy(1, 5);
+        } else {
+            console.log("🌴第一个账号不使用代理");
+        }
         console.log("随机生成UA")
         let randomUA = generateRandomUA();
         ua = randomUA.ua;
@@ -187,6 +198,9 @@ async function initGet(url) {
                 'user-agent': ua,
             }
         }
+        if (globalProxyServer && globalProxyServer !== '') {
+            options.proxy = globalProxyServer;
+        }
         $.get(options, async (err, resp, data) => {
             try {
                 if (err) {
@@ -219,6 +233,9 @@ async function passportPost(url) {
                 'user-agent': ua,
             },
             body: params.body
+        }
+        if (globalProxyServer && globalProxyServer !== '') {
+            options.proxy = globalProxyServer;
         }
         $.post(options, async (err, resp, data) => {
             try {
@@ -254,6 +271,9 @@ async function commonGet(url) {
                 'Accept-Encoding': 'gzip',
                 'user-agent': commonUa,
             }
+        }
+        if (globalProxyServer && globalProxyServer !== '') {
+            options.proxy = globalProxyServer;
         }
         $.get(options, async (err, resp, data) => {
             try {
@@ -292,6 +312,9 @@ async function commonPost(url, body) {
             },
             body: body
         }
+        if (globalProxyServer && globalProxyServer !== '') {
+            options.proxy = globalProxyServer;
+        }
         $.post(options, async (err, resp, data) => {
             try {
                 if (err) {
@@ -327,6 +350,9 @@ async function loginGet(url) {
                 'Accept-Language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',
                 'user-agent': 'Mozilla/5.0 (Linux; Android 11; 21091116AC Build/RP1A.200720.011; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/94.0.4606.85 Mobile Safari/537.36;xsb_wangchao;xsb_wangchao;6.0.2;native_app;6.10.0',
             }
+        }
+        if (globalProxyServer && globalProxyServer !== '') {
+            options.proxy = globalProxyServer;
         }
         $.get(options, async (err, resp, data) => {
             try {
@@ -370,6 +396,9 @@ async function readGet(url) {
                 'user-agent': 'Mozilla/5.0 (Linux; Android 11; 21091116AC Build/RP1A.200720.011; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/94.0.4606.85 Mobile Safari/537.36;xsb_wangchao;xsb_wangchao;6.0.2;native_app;6.10.0',
             }
         }
+        if (globalProxyServer && globalProxyServer !== '') {
+            options.proxy = globalProxyServer;
+        }
         $.get(options, async (err, resp, data) => {
             try {
                 if (err) {
@@ -405,6 +434,9 @@ async function lotteryLoginGet(url) {
                 'Accept-Language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',
                 'user-agent': 'Mozilla/5.0 (Linux; Android 11; 21091116AC Build/RP1A.200720.011; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/94.0.4606.85 Mobile Safari/537.36;xsb_wangchao;xsb_wangchao;6.0.2;native_app;6.10.0',
             }
+        }
+        if (globalProxyServer && globalProxyServer !== '') {
+            options.proxy = globalProxyServer;
         }
         $.get(options, async (err, resp, data) => {
             try {
@@ -448,6 +480,9 @@ async function lotteryGet(url) {
                 'user-agent': 'Mozilla/5.0 (Linux; Android 11; 21091116AC Build/RP1A.200720.011; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/94.0.4606.85 Mobile Safari/537.36;xsb_wangchao;xsb_wangchao;6.0.2;native_app;6.10.0',
             }
         }
+        if (globalProxyServer && globalProxyServer !== '') {
+            options.proxy = globalProxyServer;
+        }
         $.get(options, async (err, resp, data) => {
             try {
                 if (err) {
@@ -485,6 +520,9 @@ async function lotteryPost(url, body) {
                 'user-agent': 'Mozilla/5.0 (Linux; Android 11; 21091116AC Build/RP1A.200720.011; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/94.0.4606.85 Mobile Safari/537.36;xsb_wangchao;xsb_wangchao;6.0.2;native_app;6.10.0',
             },
             body: body
+        }
+        if (globalProxyServer && globalProxyServer !== '') {
+            options.proxy = globalProxyServer;
         }
         $.post(options, async (err, resp, data) => {
             try {

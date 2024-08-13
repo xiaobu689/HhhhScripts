@@ -26,19 +26,14 @@ class DLS():
     def __init__(self, token):
         self.token = token
         self.headers = {
-            'authority': 'vip.ixiliu.cn',
-            'accept': '*/*',
-            'accept-language': 'zh-CN,zh;q=0.9',
-            'access-token': token,
+            'Host': 'vip.ixiliu.cn',
+            'Connection': 'keep-alive',
+            'Access-Token': token,
+            'sid': '10006',
             'content-type': 'application/json;charset=utf-8',
             'platform': 'MP-WEIXIN',
-            'referer': 'https://servicewechat.com/wxe11089c85860ec02/30/page-frame.html',
-            'sec-fetch-dest': 'empty',
-            'sec-fetch-mode': 'cors',
-            'sec-fetch-site': 'cross-site',
-            'sid': '10006',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a1b) XWEB/9129',
-            'xweb_xhr': '1',
+            'Accept-Encoding': 'gzip,compress,br,deflate',
+            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.50(0x18003237) NetType/4G Language/zh_CN'
         }
 
     def user_info(self):

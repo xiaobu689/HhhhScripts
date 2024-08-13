@@ -8,7 +8,8 @@
 cron: 58 7,11,19 * * *
 const $ = new Env("顺义创城抢兑");
 ------------------------------
-20240804 增加自动切换账号抢兑, 一个账号抢兑成功，下一轮自动切换到下一个账号
+20240804 增加自动切换账号抢兑
+20240811 修复SSL验证失败问题
 ------------------------------
 """
 import csv
@@ -54,7 +55,7 @@ async def cashout(token, phone):
     }
     # 创建一个空的 data 字典
     body = json.dumps(payload)
-    async with aiohttp.ClientSession(headers=headers) as session:
+    async with aiohttp.ClientSession(headers=headers, connector=aiohttp.TCPConnector(ssl=False)) as session:
         try:
             async with session.post(url, data=body) as response:
                 # 计算接收响应的时间
@@ -65,9 +66,9 @@ async def cashout(token, phone):
 
                 data = await response.json()
                 if data.get('success'):
-                    message = f"✅ 提现成功 | {data['message']} | 耗时: {duration_ms:.2f} ms | 响应时间：{end_response.strftime('%H:%M:%S.%f')[:-3]}"
+                    message = f"✅ {phone} | 提现成功 | {data['message']} | 耗时: {duration_ms:.2f} ms | 响应时间：{end_response.strftime('%H:%M:%S.%f')[:-3]}"
                 else:
-                    message = f"❌ 提现失败 | {data['message']} | 耗时：{duration_ms:.2f} ms | 响应时间：{end_response.strftime('%H:%M:%S.%f')[:-3]}"
+                    message = f"❌ {phone} | 提现失败 | {data['message']} | 耗时：{duration_ms:.2f} ms | 响应时间：{end_response.strftime('%H:%M:%S.%f')[:-3]}"
                 print(message)
                 return message
         except Exception as e:
@@ -137,7 +138,7 @@ async def main():
             writer.writerow([phone])
         print(f"✅ 抢兑成功，手机号 {phone} 已记录到 sycc_tx_success.csv 文件中")
 
-    send("顺义创城枪兑结果通知", "\n".join(messages))
+    send("顺义创城抢兑结果通知", "\n".join(messages))
 
 
 if __name__ == '__main__':

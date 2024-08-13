@@ -72,9 +72,9 @@ class RUN():
         url = 'https://m.picclife.cn/chicken-api/p/chicken/collectegg'
         response_json = requests.post(url, headers=self.mHeaders).json()
         if response_json['code'] == 200:
-            print(f'🐔{response_json["data"]["name"]} | ✅收鸡蛋成功')
+            print(f'🐔✅收鸡蛋成功')
         else:
-            print(f'🐔{response_json["data"]["name"]} | ❌收鸡蛋失败 | {response_json["message"]}')
+            print(f'🐔❌收鸡蛋失败 | {response_json["message"]}')
 
     def chicken_get_taskId(self, tashId):
         response_json = requests.get('https://m.picclife.cn/chicken-api/p/chicken/listtask',
@@ -88,7 +88,6 @@ class RUN():
                     return task_id
 
             return None
-
 
     # 鸡场每日任务列表
     def chicken_daily_task(self):
@@ -139,14 +138,13 @@ class RUN():
                     elif item["taskSort"] == 32:
                         print()
 
-
-
     def do_share_task(self):
         json_data = {
             'activityCode': '2',
             'shareType': '分享朋友圈',
         }
-        response = requests.post('https://m.picclife.cn/chicken-api/p/chicken/addShareRecord', headers=self.mHeaders, json=json_data)
+        response = requests.post('https://m.picclife.cn/chicken-api/p/chicken/addShareRecord', headers=self.mHeaders,
+                                 json=json_data)
         response_json = response.json()
         if response_json['code'] == 200:
             print(f'✅分享朋友圈成功')
@@ -184,7 +182,8 @@ class RUN():
             'platform': 7,
             'mission_code': '33',
         }
-        response = requests.post('https://m.picclife.cn/ebs-api/wap/api/order/chicken-run/mission', headers=self.mHeaders, json=json_data)
+        response = requests.post('https://m.picclife.cn/ebs-api/wap/api/order/chicken-run/mission',
+                                 headers=self.mHeaders, json=json_data)
         response_json = response.json()
         if response_json["success"]:
             print(f'🐔浏览保险产品成功')
@@ -196,7 +195,8 @@ class RUN():
         params = {
             'tashId': taskSort,
         }
-        response_json = requests.post('https://m.picclife.cn/chicken-api/p/chicken/tashfinish', params=params, headers=self.mHeaders).json()
+        response_json = requests.post('https://m.picclife.cn/chicken-api/p/chicken/tashfinish', params=params,
+                                      headers=self.mHeaders).json()
         if response_json["code"] == 200:
             print(f'🐔任务完成')
         else:
@@ -208,7 +208,8 @@ class RUN():
             params = {
                 'tashId': task_id,
             }
-            response_json = requests.post('https://m.picclife.cn/chicken-api/p/chicken/tashcollect', params=params, headers=self.mHeaders).json()
+            response_json = requests.post('https://m.picclife.cn/chicken-api/p/chicken/tashcollect', params=params,
+                                          headers=self.mHeaders).json()
             if response_json["code"] == 200:
                 print(f'🐔收饲料成功')
             else:
@@ -219,7 +220,8 @@ class RUN():
         params = {
             'foodQuantity': '180',
         }
-        response = requests.post('https://m.picclife.cn/chicken-api/p/chicken/addfeedfood_v3', params=params, headers=self.mHeaders)
+        response = requests.post('https://m.picclife.cn/chicken-api/p/chicken/addfeedfood_v3', params=params,
+                                 headers=self.mHeaders)
         response_json = response.json()
         if response_json["code"] == 200:
             print(f'🐔喂鸡成功')
@@ -264,12 +266,22 @@ class RUN():
             'eggStatus': '3',
             'collectTime': collectTime,
         }
-        response = requests.post('https://m.picclife.cn/chicken-api/p/chicken/eggSell', params=params, headers=self.mHeaders)
+        response = requests.post('https://m.picclife.cn/chicken-api/p/chicken/eggSell', params=params,
+                                 headers=self.mHeaders)
         response_json = response.json()
         if response_json["code"] == 200:
             print(f'🐔卖鸡蛋成功')
         else:
             print(f'❌卖鸡蛋失败')
+
+    # 一键出售
+    def chicken_sell_egg_all(self):
+        response = requests.get('https://m.picclife.cn/chicken-api/p/chicken/eggsellall', headers=self.mHeaders)
+        response_json = response.json()
+        if response_json["code"] == 200:
+            print(f'🐔一键出售成功')
+        else:
+            print(f'❌一键出售失败|{response_json["message"]}')
 
     def chicken_user_info(self):
         response = requests.get('https://m.picclife.cn/chicken-api/p/chicken/userinfo', headers=self.mHeaders)
@@ -313,11 +325,7 @@ class RUN():
             time.sleep(random.randint(10, 15))
 
             # 卖鸡蛋
-            eggs = self.my_egg_list()
-            if eggs > 0:
-                self.chicken_sell_egg()
-            else:
-                print(f'❌卖鸡蛋失败 | 还没收鸡蛋呢')
+            self.chicken_sell_egg_all()
             time.sleep(random.randint(5, 10))
 
             # 再最后领一遍饲料

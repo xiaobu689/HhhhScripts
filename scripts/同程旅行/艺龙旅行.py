@@ -25,7 +25,6 @@ class YL():
         self.token = token
         self.headers = {
             'Host': 'wx.17u.cn',
-            #'Cookie': 'saviorInfo={"platid":"10056","chid":"ewiphone","tc_deviceid":"FAB59F1D-8D2F-4CAA-82EF-4B23460FA23F","ecrd":"","v":"10.5.3","el_deviceid":"FAB59F1D-8D2F-4CAA-82EF-4B23460FA23F","refid":"1899509596","memberid":"51UjeGypMuo8FImDeF7UYya6L_OzZsautkZqNevPCNNsNtpUVC0pL7bdrPHQ0TLGxjiSlCWWsCM6p0-XU93RUV5bmfBDmbswkZlx2IQENvRI2UpTo8qOrLo2C0jHqZKjfYm4IF7FciCpzxLeA5QJV4ow**"}',
             'TC-MALL-USER-TOKEN': '51UjeGypMuo8FImDeF7UYya6L_OzZsautkZqNevPCNNsNtpUVC0pL7bdrPHQ0TLGxjiSlCWWsCM6p0-XU93RUV5bmfBDmbswkZlx2IQENvRI2UpTo8qOrLo2C0jHqZKjfYm4IF7FciCpzxLeA5QJV4ow**',
             'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 TcTravel/10.5.3 ElTravel tctype/wk',
             'TC-MALL-PLATFORM-SUB': 'EAPP',

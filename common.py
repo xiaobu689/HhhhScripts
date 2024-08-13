@@ -284,6 +284,47 @@ def md5_encrypt(input_string):
     # 获取 MD5 哈希值的十六进制表示
     return md5.hexdigest()
 
+
+# 计算 SHA1 哈希
+def calculate_sha1_hash(data):
+    # 确保输入数据是字节串
+    if isinstance(data, str):
+        data = data.encode('utf-8')
+
+    # 创建一个 SHA1 哈希对象
+    sha1 = hashlib.sha1()
+
+    # 更新哈希对象
+    sha1.update(data)
+
+    # 获取十六进制形式的哈希值
+    hash_value = sha1.hexdigest()
+
+    return hash_value
+
+def get_millisecond_timestamp():
+    """
+    生成毫秒级时间戳
+    """
+    # 获取当前时间的时间戳（秒）
+    timestamp_seconds = time.time()
+    # 将时间戳转换为毫秒并返回
+    timestamp_milliseconds = int(timestamp_seconds * 1000)
+    return timestamp_milliseconds
+
+
+def generate_nanosecond_timestamp():
+    """
+    生成纳秒级时间戳
+    """
+    # 获取当前时间的时间戳（以秒为单位）
+    current_time_seconds = time.time()
+
+    # 转换为纳秒
+    nanoseconds = int(current_time_seconds * 1e9)
+
+    return nanoseconds
+
 # if __name__ == '__main__':
 #     word = daily_one_word()
 #     print(word)
