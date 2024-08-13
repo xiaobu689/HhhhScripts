@@ -7,6 +7,7 @@
 cron: 35 6 * * *
 const $ = new Env("杰士邦");
 """
+import json
 import os
 import random
 import re
@@ -26,34 +27,28 @@ class JSB():
     def __init__(self, token):
         self.token = token
         self.headers = {
-            'authority': 'vip.ixiliu.cn',
-            'accept': '*/*',
-            'accept-language': 'zh-CN,zh;q=0.9',
-            'access-token': token,
-            'content-type': 'application/json;charset=utf-8',
-            'platform': 'MP-WEIXIN',
-            'referer': 'https://servicewechat.com/wx9a2dc52c95994011/91/page-frame.html',
-            'sec-fetch-dest': 'empty',
-            'sec-fetch-mode': 'cors',
-            'sec-fetch-site': 'cross-site',
-            'sid': '10009',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a1b) XWEB/9129',
-            'xweb_xhr': '1',
+             'Host': 'vip.ixiliu.cn',
+             'Connection': 'keep-alive',
+             'Access-Token': token,
+             'sid': '10009',
+             'content-type': 'application/json;charset=utf-8',
+             'platform': 'MP-WEIXIN',
+             'Accept-Encoding': 'gzip,compress,br,deflate',
+             'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.50(0x18003237) NetType/WIFI Language/zh_CN'
         }
 
     def user_info(self):
         response = requests.get('https://vip.ixiliu.cn/mp/user/info', headers=self.headers)
-        if not response or response.status_code != 200:
-            save_result_to_file("success", self.name)
-            print("获取用户信息失败")
-            return
         response_json = response.json()
-        if response_json['code'] == 0:
+        if response_json['status'] == 200:
             save_result_to_file("success", self.name)
-            print(
-                f'🐶{response_json["data"]["userInfo"]["mobile"]} | 💰{response_json["data"]["userInfo"]["points_total"]}积分\n')
+            mobile = response_json["data"]["userInfo"]["mobile"]
+            points = response_json["data"]["userInfo"]["points_total"]
+            print(f'🐶{mobile} | 💰{points}积分\n')
+        elif response_json["status"] == 40001:
+            print("⛔️token已过期")
         else:
-            save_result_to_file("success", self.name)
+            save_result_to_file("error", self.name)
 
     def sign(self):
         response = requests.get('https://vip.ixiliu.cn/mp/sign/applyV2', headers=self.headers)
@@ -68,7 +63,7 @@ class JSB():
 
     def main(self):
         self.user_info()
-        time.sleep(random.randint(15, 30))
+        time.sleep(random.randint(10, 15))
         self.sign()
 
 
@@ -78,11 +73,18 @@ if __name__ == '__main__':
     if not tokenStr:
         print(f'⛔️未获取到ck变量：请检查变量 {env_name} 是否填写')
         exit(0)
-    tokens = re.split(r'&', tokenStr)
-    print(f"杰士邦共获取到{len(tokens)}个账号")
-    for i, token in enumerate(tokens, start=1):
+
+    try:
+        json_data = json.loads(tokenStr)
+        print(f"杰士邦共获取到{len(json_data)}个账号")
+    except json.JSONDecodeError:
+        print('⛔️ JSON 解析失败，请检查变量格式是否正确')
+        exit(0)
+
+    for i, token_data in enumerate(json_data, start=1):
         print(f"\n======== ▷ 第 {i} 个账号 ◁ ========")
+        token = token_data.get('token')
+        user_id = token_data.get('id')
         JSB(token).main()
-        print("\n随机等待30-60s进行下一个账号")
-        time.sleep(random.randint(30, 60))
-        print("----------------------------------")
+        print("\n随机等待10-15s进行下一个账号")
+        time.sleep(random.randint(10, 15))
