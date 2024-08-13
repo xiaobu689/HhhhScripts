@@ -1,5 +1,6 @@
 # ! /usr/bin/python
 # coding=utf-8
+import json
 import os
 import time
 import requests
@@ -7,14 +8,27 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 
 env_name = 'PZ_CONFIG'
-pinzan_config = os.getenv(env_name)
-if not pinzan_config:
+pinzan_config_str = os.getenv(env_name)
+if not pinzan_config_str:
     print(f'⛔️未获取到配置变量：请检查变量 {env_name} 是否填写')
     exit(0)
 
+try:
+    pinzan_config = json.loads(pinzan_config_str)
+except json.JSONDecodeError:
+    print('⛔️配置变量格式错误：无法解析为JSON')
+    exit(0)
+
+password = pinzan_config.get('password')
+no = pinzan_config.get('no')
+tiqu_secret = pinzan_config.get('tiqu_secret')
+sig_secret = pinzan_config.get('sig_secret')
+user_id = pinzan_config.get('user_id')
+
+
 # 套餐余量查询
 def get_proxies_usage():
-    url = 'https://service.ipzan.com/userProduct-get?no=20240524952954587395&userId=7B5L7LBGUS'
+    url = f'https://service.ipzan.com/userProduct-get?no={no}&userId={user_id}'
     response = requests.get(url)
     if not response or response.status_code != 200:
         print("套餐余量查询失败")
@@ -27,29 +41,29 @@ def get_proxies_usage():
 
 
 # IP提取
-def generate_ip(num, minute):
-    ip = ''
-    ip_api = []
-    addWhiteList = False
+def generate_ip(num, minute, area):
     params = {
         'num': num,
-        'no': pinzan_config['no'],
+        'no': no,
         'minute': minute,
         'format': 'json',
+        "repeat": 1,  # 是否重复提取: 1:24小时去重 | 0:不去重
         'protocol': '1',  # 使用协议：http/https: 1
         'pool': 'quality',  # 优质IP: quality | 普通IP池: ordinary
         'mode': 'auth',  # whitelist: 白名单授权方式 | auth: 账号密码授权
-        'secret': pinzan_config['tiqu_secret']
+        'secret': tiqu_secret
     }
+
+    if area != '':
+        params['area'] = area  # 区域: 110100|北京 310100|上海
+
     url = 'https://service.ipzan.com/core-extract'
     response = requests.get(url, params=params)
-    if not response or response.status_code != 200:
-        print("IP提取失败")
-        return ip_api, addWhiteList, ip
     response_json = response.json()
+    print(f'{response_json}')
     if response_json["code"] == 0:
         ip_api = response_json["data"]["list"]
-        return ip_api, addWhiteList, ip
+        return ip_api, False, ''
     else:
         if "加入到白名单再进行提取" in response_json["message"]:
             ip = response_json["message"].split("将")[1].split("加入")[0]
@@ -63,9 +77,9 @@ def white_list_add(ip):
     print('💤开始加入白名单......')
 
     # 加签的内容
-    data = f"{pinzan_config['password']}:{pinzan_config['tiqu_secret']}:{int(time.time())}"
+    data = f"{password}:{tiqu_secret}:{int(time.time())}"
     # 解析签名秘钥，秘钥请在 "控制台" > "控制台"中查看
-    key = f"{pinzan_config['sig_secret']}".encode("utf-8")
+    key = f"{sig_secret}".encode("utf-8")
     # 进行签名
     cipher = AES.new(key, AES.MODE_ECB)
     encrypted_data = cipher.encrypt(pad(data.encode("utf-8"), AES.block_size))
@@ -74,11 +88,12 @@ def white_list_add(ip):
     # 添加白名单
     url = "https://service.ipzan.com/whiteList-add"
     payload = {
-        "no": pinzan_config['no'],
+        "no": no,
         "ip": ip,
         "sign": sign,
     }
     response_json = requests.post(url, json=payload).json()
+    print(f'添加白名单|{response_json}')
 
     print(f'🥰{response_json["data"]}')
 
@@ -111,10 +126,10 @@ def create_proxies(ip_apis):
 
         api_proxies.append(proxies)
 
-    return proxies
+    return api_proxies
 
 
-def pinzan_proxy(num, minute):
+def pinzan_proxy(num, minute, area):
     print(f'\n---------------- 代理INFO区域 ----------------')
     print(f'🍳本脚本使用代理 | 提取数量: {num}个 | 有效期: {minute}分钟')
     http_proxies = []
@@ -124,14 +139,14 @@ def pinzan_proxy(num, minute):
         print("套餐余额不足")
         return None
     # 提取ip
-    ip_apis, addWhiteList, ip = generate_ip(num, minute)
+    ip_apis, addWhiteList, ip = generate_ip(num, minute, area)
     if ip != "":
         while True:
             # 添加白名单
             white_list_add(ip)
             time.sleep(1)
             # 提取ip
-            ip_apis, addWhiteList, ip = generate_ip(num, minute)
+            ip_apis, addWhiteList, ip = generate_ip(num, minute, area)
             if len(ip_apis) > 0:
                 http_proxies = create_proxies(ip_apis)
                 break
@@ -143,6 +158,6 @@ def pinzan_proxy(num, minute):
     return http_proxies
 
 
-if __name__ == '__main__':
-    http_proxies = pinzan_proxy(1, 1)
-    print(http_proxies)
+# if __name__ == '__main__':
+#     http_proxies = pinzan_proxy(3, 1, '110100')
+#     print(http_proxies)

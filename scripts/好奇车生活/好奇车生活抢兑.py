@@ -105,7 +105,7 @@ async def main():
         print("⚠️ 当前时间不在抢购时间段内。")
         return
 
-    await trigger_at_specific_millisecond(target_hour, 59, 59, 200)
+    await trigger_at_specific_millisecond(target_hour, 59, 59, 100)
 
     tasks = [exchange(account_id) for _ in range(10)]
     results = await asyncio.gather(*tasks)

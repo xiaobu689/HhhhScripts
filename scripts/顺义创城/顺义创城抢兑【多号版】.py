@@ -1,26 +1,21 @@
 """
-顺义创城抢兑
+顺义创城抢兑【多账号】
 
-【单账号版】
-抓任意包请求头 x_applet_token#phone#milliseconds
-变量名: SYCC_QD
+【多账号版】
+抓任意包请求头 x_applet_token
+变量名: SYCC_TOKEN
 
 cron: 58 7,11,19 * * *
-const $ = new Env("顺义创城抢兑");
-------------------------------
-20240804 增加自动切换账号抢兑
-20240811 修复SSL验证失败问题
-------------------------------
+const $ = new Env("顺义创城抢兑【多账号】");
+-------------------------------
+20240813 增加代理配置，测试不用代理也可以到账，避免后面接口升级，懒得经常查看
+-------------------------------
 """
 
-print("多账号版使用中......")
-exit(0)
-
-
 import csv
+import json
 import datetime
 import asyncio
-import json
 import os
 import re
 import time
@@ -38,12 +33,10 @@ async def trigger_at_specific_millisecond(hour, minute, second, millisecond):
         current_time = now.hour * 60 * 60 * 1000 + now.minute * 60 * 1000 + now.second * 1000 + now.microsecond // 1000
         if current_time >= target_time:
             break
-        # else:
-        #     print(f"当前时间: {now.hour}:{now.minute}:{now.second}.{now.microsecond // 1000}")
-        await asyncio.sleep(0)  # 让出控制权给其他任务
+        await asyncio.sleep(0)
 
 
-async def cashout(token, phone, http_proxies):
+async def cashout(token, phone, api_proxies):
     headers = {
         'Host': 'admin.shunyi.wenming.city',
         'Connection': 'keep-alive',
@@ -54,6 +47,7 @@ async def cashout(token, phone, http_proxies):
     }
     url = 'https://admin.shunyi.wenming.city/jeecg-boot/applet/award/exchangeAward'
     start_time = time.time()
+    # 请求体
     # 1562334019131645953|2元
     # 1788826595521810434|1元
     payload = {
@@ -64,14 +58,11 @@ async def cashout(token, phone, http_proxies):
     body = json.dumps(payload)
     async with aiohttp.ClientSession(headers=headers, connector=aiohttp.TCPConnector(ssl=False)) as session:
         try:
-            # 使用session.post()方法发送POST请求，并设置proxy参数
-            async with session.post(url, data=body, proxy=http_proxies) as response:
-                # 计算接收响应的时间
+            # 配置代理
+            async with session.post(url, data=body, proxy=api_proxies) as response:
                 end_time = time.time()
-                # 记录收到响应的当前时间
                 end_response = datetime.now()
                 duration_ms = (end_time - start_time) * 1000
-
                 data = await response.json()
                 if data.get('success'):
                     message = f"✅ {phone} | 提现成功 | {data['message']} | 耗时: {duration_ms:.2f} ms | 响应时间：{end_response.strftime('%H:%M:%S.%f')[:-3]}"
@@ -85,44 +76,35 @@ async def cashout(token, phone, http_proxies):
             return error_message
 
 
-def get_success_count():
-    # 删除旧文件
+def get_success_phones():
     today_date = datetime.now().strftime("%Y%m%d")
     file_name = f'sycc_tx_success_{today_date}.csv'
-    files = os.listdir('.')
-    files_to_delete = [f for f in files if 'sycc_tx_success' in f and today_date not in f]
-    for f in files_to_delete:
-        os.remove(f)
-
-    # 读取新文件
-    if os.path.exists(file_name):
-        with open(file_name, 'r') as file:
-            reader = csv.reader(file)
-            success_phones = [row[0] for row in reader]
-    else:
-        success_phones = []
-
-    return len(success_phones)
+    existing_phones = set()
+    with open(file_name, mode='r', newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        for row in reader:
+            existing_phones.add(row[0])
+    return existing_phones
 
 
 async def main():
-    # 设置代理
-    http_proxies = pinzan_proxy(1, 1, '110100')
-
     messages = []
     SY_token = os.getenv('SYCC_QD')
     if not SY_token:
         print(f'⛔️未获取到ck变量：请检查变量 {SY_token} 是否填写')
         return
-
     tokens = re.split(r'&', SY_token)
-    count = get_success_count()
-    if count >= len(tokens):
-        exit(0)
-
-    sycc_token = tokens[count]
-    token, phone, millisecond = sycc_token.split('#')
-    print(f"总账号数量:{len(tokens)}个 | 已有{count}个账号抢兑成功，开始第{count+1}个账号抢兑 | 本次抢兑账号:{phone}")
+    existing_phones = get_success_phones()
+    tokens_ = []
+    tar_millisecond = 0
+    for i, token in enumerate(tokens, start=1):
+        auth, phone, millisecond = token.split('#')
+        if i == 1:
+            tar_millisecond = millisecond
+        if phone not in existing_phones:
+            tokens_.append(token)
+    # 生成代理
+    proxies = pinzan_proxy(len(tokens_), 1, '110100')
 
     now = datetime.now()
     if now.hour in [7, 11, 19]:
@@ -130,25 +112,31 @@ async def main():
     else:
         print("⚠️ 当前时间不在抢购时间段内。")
         return
+    await trigger_at_specific_millisecond(target_hour, 59, 59, int(tar_millisecond))
 
-    await trigger_at_specific_millisecond(target_hour, 59, 59, int(millisecond))
+    tasks = []
+    for i, token in enumerate(tokens_, start=1):
+        token, phone, millisecond = token.split('#')
+        for _ in range(1):
+            api_proxies = proxies[i - 1].get('https')
+            tasks.append(cashout(token, phone, api_proxies))
 
-    tasks = [cashout(token, phone, http_proxies) for _ in range(10)]
     results = await asyncio.gather(*tasks)
-    success_flag = 0
     for result in results:
         if "提现成功" in result:
-            success_flag = 1
+            phone_pattern = r'\b1[3-9]\d{9}\b'
+            match = re.search(phone_pattern, result)
+            if match:
+                phone_number = match.group()
+                today_date = datetime.now().strftime("%Y%m%d")
+                file_name = f'sycc_tx_success_{today_date}.csv'
+                with open(file_name, 'a', newline='') as file:
+                    writer = csv.writer(file)
+                    writer.writerow([phone_number])
+                print(f"✅ 抢兑成功，手机号 {phone_number} 已记录到 sycc_tx_success.csv 文件中")
         messages.append(result)
 
-    if success_flag > 0:
-        today_date = datetime.now().strftime("%Y%m%d")
-        file_name = f'sycc_tx_success_{today_date}.csv'
-        with open(file_name, 'a', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow([phone])
-        print(f"✅ 抢兑成功，手机号 {phone} 已记录到 sycc_tx_success.csv 文件中")
-
+    # 消息推送
     send("顺义创城抢兑结果通知", "\n".join(messages))
 
 
