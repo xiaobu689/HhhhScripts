@@ -1,5 +1,3 @@
-# ! /usr/bin/python
-# coding=utf-8
 import json
 import os
 import time
@@ -60,7 +58,6 @@ def generate_ip(num, minute, area):
     url = 'https://service.ipzan.com/core-extract'
     response = requests.get(url, params=params)
     response_json = response.json()
-    print(f'{response_json}')
     if response_json["code"] == 0:
         ip_api = response_json["data"]["list"]
         return ip_api, False, ''
