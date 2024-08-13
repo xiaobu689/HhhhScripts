@@ -104,7 +104,7 @@ async def main():
         if phone not in existing_phones:
             tokens_.append(token)
     # 生成代理
-    proxies = pinzan_proxy(len(tokens_), 1, '110100')
+    proxies = pinzan_proxy(len(tokens_), 3, '110100')
 
     now = datetime.now()
     if now.hour in [7, 11, 19]:
