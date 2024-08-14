@@ -80,10 +80,13 @@ def get_success_phones():
     today_date = datetime.now().strftime("%Y%m%d")
     file_name = f'sycc_tx_success_{today_date}.csv'
     existing_phones = set()
-    with open(file_name, mode='r', newline='') as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            existing_phones.add(row[0])
+    try:
+        with open(file_name, mode='r', newline='') as csvfile:
+            reader = csv.reader(csvfile)
+            for row in reader:
+                existing_phones.add(row[0])
+    except FileNotFoundError:
+        print(f"文件{file_name}不存在|还没有账号成功提现")
     return existing_phones
 
 
@@ -94,6 +97,7 @@ async def main():
         print(f'⛔️未获取到ck变量：请检查变量 {SY_token} 是否填写')
         return
     tokens = re.split(r'&', SY_token)
+
     existing_phones = get_success_phones()
     tokens_ = []
     tar_millisecond = 0
@@ -103,6 +107,7 @@ async def main():
             tar_millisecond = millisecond
         if phone not in existing_phones:
             tokens_.append(token)
+
     # 生成代理
     proxies = pinzan_proxy(len(tokens_), 3, '110100')
 
