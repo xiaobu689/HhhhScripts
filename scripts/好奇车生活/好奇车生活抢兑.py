@@ -7,7 +7,7 @@
 变量格式：openId#accountId
 多账号用&分割
 
-cron: 58 17 * * *
+cron: 57 17 * * *
 const $ = new Env("好奇车生活抢兑");
 """
 
@@ -53,9 +53,9 @@ async def exchange(account_id):
         'accountId': account_id,
     }
 
-    # 1.08元红包
-    pointsMallCardId = '754492665391370240'
-    exchangeNeedPoints = 188
+    # 5.88元红包
+    pointsMallCardId = '754493011522113536'
+    exchangeNeedPoints = 888
 
     # 18元京东E卡
     # pointsMallCardId = '792556957722198016'
@@ -74,6 +74,7 @@ async def exchange(account_id):
                 end_response = datetime.now()
                 duration_ms = (end_time - start_time) * 1000
                 data = await response.json()
+                print(f"抢兑结果|{data}")
                 if data["code"] == 200:
                     message = f"✅ 抢兑成功 | {data['message']} | 耗时: {duration_ms:.2f} ms | 响应时间：{end_response.strftime('%H:%M:%S.%f')[:-3]}"
                 else:
@@ -104,10 +105,9 @@ async def main():
     else:
         print("⚠️ 当前时间不在抢购时间段内。")
         return
-
     await trigger_at_specific_millisecond(target_hour, 59, 59, 100)
 
-    tasks = [exchange(account_id) for _ in range(10)]
+    tasks = [exchange(account_id) for _ in range(1)]
     results = await asyncio.gather(*tasks)
 
     for result in results:
