@@ -8,13 +8,14 @@
 变量值：unionid#miniopenid#mobile
 多账号&连接
 
-cron: 0 0,8 * * *
+cron: 0 0,8,15 * * *
 const $ = new Env("招商信诺");
 
 --------------------------
 20240714 修复CK有效期短问题
 20240804 增加等级宝箱抽奖、转盘抽奖
 20250805 增加猜硬币
+20240815 增加大转盘抽奖消息推送
 --------------------------
 """
 import base64
@@ -29,6 +30,7 @@ import requests
 from datetime import datetime
 from urllib3.exceptions import InsecureRequestWarning, InsecurePlatformWarning
 from common import save_result_to_file
+from sendNotify import send
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
@@ -140,39 +142,45 @@ class ZSXN():
             print(f'❌抽奖失败基础信息获取失败：{response_json["respDesc"]}')
 
     def do_lottery(self):
-        headers = {
-            'Host': 'member.cignacmb.com',
-            'Accept': 'application/json, text/plain, */*',
-            'Authorization': self.token,
-            'X-Requested-With': 'XMLHttpRequest',
-            'Sec-Fetch-Site': 'same-origin',
-            'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
-            'Sec-Fetch-Mode': 'cors',
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Origin': 'https://member.cignacmb.com',
-            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;hmsapp/5.24.10;HMS_APP_SESSIONID/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzaWduRGF0YSI6IjA2MDY1QjhFMzNEMDg0MzRBNkZGQ0E2MTE5RENBNUJBODIxMTcxIiwibG9naW5UaW1lIjoiMTcxODg3NzgxMTk2OCIsIm5iZiI6MTcxODg3NzgxMSwiZXhwdCI6MTcxODk2NDIxMTk2OCwiaXNzIjoiSldUIiwiZnJvbSI6IkFQUCIsImV4cCI6MTcyMDA4NzQxMSwidXNlcklkIjoiNzE4MTgwNSIsImlhdCI6MTcxODg3NzgxMX0.ZpbJfVcqx3AlDiZt99XUTpbvpSOoGCHigHfXhdeyS7M;',
-            'Referer': 'https://member.cignacmb.com/mb-web/shop/mod/index.html?appVersion=5.24.10',
-            'Connection': 'keep-alive',
-            'Sec-Fetch-Dest': 'empty',
-        }
-
-        data = {
-            'param': 'e30=',
-        }
-
-        response = requests.post(
-            'https://member.cignacmb.com/shop/member/interface/doPointsDraw',
-            headers=headers,
-            data=data,
-        )
-        if not response or response.status_code != 200:
-            print("抽奖异常：", response.text)
+        msg = ''
+        if int(self.total_score) < 495:
+            print("积分不足，不能五连抽")
             return
-        response_json = response.json()
-        if response_json['respCode'] == '00':
-            print(f'✅抽奖成功 | 抽奖结果: {response_json["respData"]["prizeName"]}')
-        else:
-            print(f'❌抽奖失败：{response_json["respDesc"]}')
+        for i in range(int(self.lottery_count)):
+            headers = {
+                'Host': 'member.cignacmb.com',
+                'Accept': 'application/json, text/plain, */*',
+                'Authorization': self.token,
+                'X-Requested-With': 'XMLHttpRequest',
+                'Sec-Fetch-Site': 'same-origin',
+                'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
+                'Sec-Fetch-Mode': 'cors',
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Origin': 'https://member.cignacmb.com',
+                'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;hmsapp/5.24.10;HMS_APP_SESSIONID/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzaWduRGF0YSI6IjA2MDY1QjhFMzNEMDg0MzRBNkZGQ0E2MTE5RENBNUJBODIxMTcxIiwibG9naW5UaW1lIjoiMTcxODg3NzgxMTk2OCIsIm5iZiI6MTcxODg3NzgxMSwiZXhwdCI6MTcxODk2NDIxMTk2OCwiaXNzIjoiSldUIiwiZnJvbSI6IkFQUCIsImV4cCI6MTcyMDA4NzQxMSwidXNlcklkIjoiNzE4MTgwNSIsImlhdCI6MTcxODg3NzgxMX0.ZpbJfVcqx3AlDiZt99XUTpbvpSOoGCHigHfXhdeyS7M;',
+                'Referer': 'https://member.cignacmb.com/mb-web/shop/mod/index.html?appVersion=5.24.10',
+                'Connection': 'keep-alive',
+                'Sec-Fetch-Dest': 'empty',
+            }
+            data = {
+                'param': 'e30=',
+            }
+            url = 'https://member.cignacmb.com/shop/member/interface/doPointsDraw'
+            response = requests.post(url, headers=headers, data=data)
+            response_json = response.json()
+            if response_json['respCode'] == '00':
+                message = f'✅第{i + 1}次抽奖 | 抽奖结果: {response_json["respData"]["prizeName"]}'
+                print(message)
+                msg += message + "\n"
+            else:
+                message = f'❌抽奖失败：{response_json["respDesc"]}'
+                print(message)
+                msg += message + "\n"
+            time.sleep(random.randint(3, 5))
+
+        # 抽奖结果推送
+        send("招商信诺大转盘抽奖", msg)
+
 
     def points_info(self):
         headers = {
@@ -723,10 +731,7 @@ class ZSXN():
 
             # 糯米转盘(攒一次5连抽吧)
             print(f"\n======== ▷ 糯米大转盘 ◁ ========")
-            if int(self.total_score) >= 495:
-                for i in range(int(self.lottery_count)):
-                    self.do_lottery()
-                    time.sleep(random.randint(5, 10))
+            self.do_lottery()
 
 
 if __name__ == '__main__':

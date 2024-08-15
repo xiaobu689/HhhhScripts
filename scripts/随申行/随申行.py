@@ -5,14 +5,13 @@
 用途：签到、做任务、养宠物攒兜豆，兑换上海地铁优惠券
 变量名：SSX_COOKIE
 格式： 任意请求头抓 Authorization 值
-
 ---------------------------------
 20240529 新增当日首次登陆、游戏成就分享
 20240610 新增每日签到、浏览商场任务
 20240717 增加自动领养宠物
 20240808 增加浏览兜豆商城任务
+20240815 更新兜豆领取API && 移除废弃活动
 ---------------------------------
-定时设置：每天1次，时间随意
 cron: 0 0 * * *
 const $ = new Env("随申行");
 """
@@ -24,6 +23,7 @@ from datetime import datetime
 from common import make_request, save_result_to_file
 from urllib3.exceptions import InsecureRequestWarning, InsecurePlatformWarning
 from common import qianwen_messages
+
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
 from sendNotify import send
@@ -38,21 +38,9 @@ class SSX():
         self.uid = parts[1]
         self.adoptingId = 0
         self.adoptingName = ''
+        self.wait_receive_ids = []
         self.needReceiveBean = 0
         self.msg = ''
-        self.gpsHeaders = {
-            'Host': 'dualstack-restios.amap.com',
-            'Accept': '*/*',
-            'platinfo': 'platform=iOS&product=sea&sdkversion=9.7.0&founversion=1.8.2',
-            'x-info': 't34+94jruh/r2BCfvOVOAdT/3hBBx5N7L2rs2wkhydqjoBoMlswtRSzEnP4GoLbT1Pb8820nK8KarglxuCo0RYIQ6/W6+rsH5iJe6Qr3E+jwqcYJDRRhP2uhUUrEKSc0UTaCX5J8CricuFCAcVl+8vqP7xkEJObHQqeNqYd7d1INtIxMjY0YDRkNWP1LMlKLGA0YBCwtrCzNrZKTrYwtrEytjE0ZGDgMgPpAAM5gkMPvWpvM3MRk25qkzBTb5Dy94ozcxMRiPRBRU1ySX5SYnmpraGRoaWxYU5SYa2tqZmlak1iUnGHrGORrZuIKAGfGhIoKAQAA',
-            'logversion': '2.1',
-            'Accept-Encoding': 'gzip,deflate',
-            'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'User-Agent': 'AMAP_SDK_iOS_Search_9.7.0',
-            'Connection': 'keep-alive',
-            'csid': '6C593DEE-6628-4EFB-999E-010569620BBB'
-        }
         self.headers = {
             'Host': 'api.shmaas.net',
             'User-Agent': 'ios-shell-maas/2.00.41 (iPhone; iOS 16.6; Scale/3.00)',
@@ -98,89 +86,10 @@ class SSX():
             msg += f'🐹昵称：{response["data"]["userBasicInformation"]["name"]}\n'
             msg += f'🐹手机：{response["data"]["userBasicInformation"]["mobile"]}\n'
             msg += f'🐹兜豆：{response["data"]["userCombineInformation"]["userCredit"]["greenCredit"]}'
-
             self.msg += msg
             print(msg)
         else:
             save_result_to_file("error", self.name)
-
-    def receive_all_credit(self):
-        headers = {
-            'Host': 'r.shmaas.net',
-            'X-Saic-AppId': 'maas_car',
-            'Accept': 'application/json',
-            'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ1aWQiOiJDYjE4NDM3ZGM3ZjZiNDVjMTgxOWMyNWQ5OGJmOGE0ZmMiLCJkZXZpY2VJZCI6Ikd6Y3Rabjg0NTBNU0hQODVQQk1mbnBNWXRiUlJBVGZNIiwiZXhwaXJlSW4iOjMxMjc2MzI3NTc4OTYyMiwiY3JlYXRlVGltZSI6MTcyMzI3NTc4OTYyMiwicGxhdGZvcm1Db2RlIjoiaDUiLCJhcHBJZCI6Im1hYXNfY2FyIiwiY2hhbm5lbENvZGUiOiJtYWFzIiwiYWNjb3VudE5hbWUiOiJBVVRIX0g1X1RJQ0tFVF9mNWIzOTIxODhiZmI0NzkxYmMwMGY5YjE0NmUwZGViMyIsImFjY291bnRUeXBlIjoiMTUiLCJwcm9kdWN0SWQiOjAsImVrIjoiIiwidWlkVHlwZSI6MSwidGFnIjoyfQ.m2yTPummQ7N4MT4lbFN6MLDyEtdFtMXmvUlUc5BXInBP1tHetgsmsFV_sjilHqF9md7kGecHTAYaNklP2ozLvwJNpjVmrtvQsNwhqpJ_RCwfsnbCg7dOIw2bnW5EWHCPh5_kr5B7ttf15bftwwHJt3E6NnCcHSTjeZqEZcpRG4g',
-            'X-Saic-Channel': 'maas',
-            'Sec-Fetch-Site': 'cross-site',
-            'X-Saic-Device-Id': 'GzctZn8450MSHP85PBMfnpMYtbRRATfM',
-            'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
-            'Sec-Fetch-Mode': 'cors',
-            'Content-Type': 'application/json',
-            'Origin': 'https://www.shmaas.cn',
-            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 x-isapp=1&bundleId=cn.shmaas.maas',
-            'Referer': 'https://www.shmaas.cn/',
-            'Connection': 'keep-alive',
-            'X-Saic-Platform': 'h5',
-            'Sec-Fetch-Dest': 'empty',
-        }
-
-        json_data = [
-            {
-                'sys': {
-                    'dataId': 2908,
-                    'dataDesc': '领取兜豆组件-【一键领取】按钮点击',
-                    'dataExtra': '{"componentId":"receivepoint_cbc65687"}',
-                    'tag': '',
-                    'userid': 'Cb18437dc7f6b45c1819c25d98bf8a4fc',
-                    'channel': '',
-                    'sourceId': '',
-                    'osName': 'ios',
-                    'isapp': True,
-                    'deviceId': 'GzctZn8450MSHP85PBMfnpMYtbRRATfM',
-                    'timestamp': 1723275796267,
-                    'newDeviceId': '633EB41D5EEC41B1BA90E94C0A37D1D6',
-                    'appId': 'maas_car',
-                    'url': 'https://www.shmaas.cn/magic/dist/56ddf9d392c71a3ce2e0e2c69d26e4e1/index.html?needToken=1&language=zh-cn&ticket=AUTH_H5_TICKET_f5b392188bfb4791bc00f9b146e0deb3&appid=maas_car',
-                    'platform': 'h5',
-                    'hostPlatform': 'app',
-                    'hostPlatformKey': 'default',
-                    'serverType': 'prod',
-                    'cityCode': '310100',
-                    'module': 'tmagic',
-                },
-                'cus': {},
-            },
-        ]
-        url = 'https://r.shmaas.net/receive/samplingreceiver/receivedata'
-        response_json = requests.post(url, headers=headers, json=json_data).json()
-        if response_json['errCode'] == 0:
-            print(f'✅领取兜豆成功！')
-        else:
-            print(f'❌领取兜豆失败|{response_json["errMsg"]}')
-
-
-    def receive(self):
-        url = 'https://api.shmaas.net/cap/base/platform/receiveBubbleCredit'
-        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        data = {
-            "greenCreditTime": current_time,
-            "language": "zh-cn",
-            "carBonTypeName": "任务",
-            "uniqueId": f"任务_{self.needReceiveBean}_{current_time}",
-            "greenCredit": self.needReceiveBean
-        }
-        msg = f'-----------------------------------\n'
-        response = requests.post(url, headers=self.headers, json=data).json()
-        if response['errCode'] == 0:
-            msg += f'✅今日兜豆奖励领取成功！\n'
-            print(msg)
-        elif response['errCode'] == -2763132:
-            msg += f'❌已经领取过了，请勿重复领取！\n'
-            print(msg)
-        else:
-            msg += f'❌领取失败， cookie可能已失效：{response["errMsg"]}\n'
-            print(msg)
-
 
     def user_game_list(self):
         gameName = ''
@@ -247,7 +156,7 @@ class SSX():
         need_score = response["data"]["feedUserGameNew"]["needScore"]
         msg = f'-----------------------------------\n'
         if response['errCode'] == 0:
-            msg += f'✅喂养成功，更新等级进度：{now_score-10}/{need_score}➡️{now_score}/{need_score}\n'
+            msg += f'✅喂养成功，更新等级进度：{now_score - 10}/{need_score}➡️{now_score}/{need_score}\n'
             if now_score == 100:
                 print("✅喂养完成，开始领养新的宠物")
                 self.adopt()
@@ -326,7 +235,6 @@ class SSX():
         self.msg += msg
         print(msg)
 
-
     def ssx_sign(self):
         json_data = {
             'sourceId': 'activityPlay66e9b9acf94d0293',
@@ -359,6 +267,34 @@ class SSX():
         else:
             print(f'❌浏览兜豆商城失败，{response_json["errMsg"]}')
 
+    # 待领取积分
+    def wait_receive_credit(self):
+        json_data = {
+            'uid': self.uid,
+        }
+        url = 'https://api.shmaas.net/cap/base/credits/queryCreditsDetail'
+        response_json = requests.post(url, headers=self.headers, json=json_data).json()
+        if response_json['errCode'] == 0:
+            list = response_json['data']['detail']
+            if len(list) > 0:
+                for item in response_json['data']['detail']:
+                    id = item['id']
+                    self.wait_receive_ids.append(id)
+        else:
+            print(f'❌获取待领取积分失败，{response_json["errMsg"]}')
+
+    def receive_all_credit(self):
+        json_data = {
+            'greenCreditId': self.wait_receive_ids,
+            'uid': self.uid,
+        }
+        url = 'https://api.shmaas.net/cap/base/credits/getBubbleCredit'
+        response_json = requests.post(url, headers=self.headers, json=json_data).json()
+        if response_json['errCode'] == 0:
+            print("✅兜豆领取成功")
+        else:
+            print(f'❌兜豆领取失败|{response_json["errMsg"]}')
+
     def main(self):
         title = "随申行"
         self.getUserInfo()
@@ -378,7 +314,7 @@ class SSX():
         self.view_mall()
         time.sleep(random.randint(5, 10))
 
-        # self.receive()
+        self.wait_receive_credit()
         self.receive_all_credit()
         time.sleep(random.randint(5, 10))
 

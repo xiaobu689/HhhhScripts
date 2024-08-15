@@ -276,7 +276,7 @@ class RUN():
 
     # 一键出售
     def chicken_sell_egg_all(self):
-        response = requests.get('https://m.picclife.cn/chicken-api/p/chicken/eggsellall', headers=self.mHeaders)
+        response = requests.post('https://m.picclife.cn/chicken-api/p/chicken/eggsellall', headers=self.mHeaders)
         response_json = response.json()
         if response_json["code"] == 200:
             print(f'🐔一键出售成功')

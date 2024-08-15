@@ -62,7 +62,7 @@ function _0x2c737d(_0x26ac3f, _0x3147d7, _0xf49249, _0x26309a, _0x4e9280 = 5) {
                         _0x59edd7 = _0x1f858f.match(_0x17c5ea)[1],
                         _0x31bef0 = " _m_h5_tk_enc=" + _0x59edd7.split(";")[0];
                     _0x26ac3f = _0xebb331(_0x469b02, _0x31bef0, _0x26ac3f);
-                    _0x4e9280 <= 0 ? (console.log("第", _0x3147d7 + 1, "cookie存在异常，请检查"), _0x73fab4(null)) : _0x73fab4(await _0x539aac(_0x26ac3f, _0x3147d7, _0xf49249, _0x26309a, _0x4e9280 - 1));
+                    _0x4e9280 <= 0 ? (console.log("第", _0x3147d7 + 1, "cookie存在异常，请检查"), _0x73fab4(null)) : _0x73fab4(await checkCk(_0x26ac3f, _0x3147d7, _0xf49249, _0x26309a, _0x4e9280 - 1));
                 } else _0x73fab4(null);
             });
         } catch (_0x37ff20) {
@@ -90,7 +90,7 @@ function _0xebb331(_0xe3833b, _0x2f901e, _0x38a366) {
     } else _0x268beb = _0x38a366 + ";" + _0xe3833b + ";" + _0x2f901e;
     return _0x38a366 = _0x268beb, _0x38a366;
 }
-const _0x539aac = async (_0x3e1510, _0x22a09c, _0x1200ab, _0x7f153d, _0x3fefd6 = 5) => {
+const checkCk = async (_0x3e1510, _0x22a09c, _0x1200ab, _0x7f153d, _0x3fefd6 = 5) => {
     _0x3e1510 = _0x3e1510.replace(/\s/g, "");
     let _0x452452 = _0x458c4f(_0x3e1510);
     _0x452452 = _0x452452.split("_")[0];
@@ -228,13 +228,30 @@ function _0x316481(_0x556b66) {
     }
     return _0x2927a6;
 }
-function _0x37e70a(_0x192643 = "elmck") {
-    console.log("版本：内部9.9.9\n");
-    let _0x11979f = [],
-        _0x33312f = process.env[_0x192643];
-    return _0x33312f && (_0x33312f.indexOf("&") > -1 ? _0x11979f = _0x33312f.split("&") : _0x33312f.indexOf("\n") > -1 ? _0x11979f = _0x33312f.split("\n") : _0x11979f = [_0x33312f]), _0x11979f;
+// function getCookies(envVarName = "elmck") {
+//     console.log("版本：内部9.9.9\n");
+//     cookiesArray
+//     let cookiesArray = [],
+//         cookiesStr = process.env[envVarName];
+//     return cookiesStr && (cookiesStr.indexOf("&") > -1 ? cookiesArray = cookiesStr.split("&") : cookiesStr.indexOf("\n") > -1 ? cookiesArray = cookiesStr.split("\n") : cookiesArray = [cookiesStr]), cookiesArray;
+// }
+
+// 更改CK格式，兼容公众号更新CK
+function getCookies(envVarName = "elmck") {
+    let tokensArray = [];
+    let envVarValue = process.env[envVarName];
+    if (envVarValue) {
+        try {
+            let jsonArray = JSON.parse(envVarValue);
+            tokensArray = jsonArray.map(item => item.token);
+        } catch (e) {
+            console.error("解析 JSON 失败:", e);
+        }
+    }
+
+    return tokensArray;
 }
-const _0x4ba1f4 = _0x106c4d => {
+const getUserInfo = _0x106c4d => {
     const _0x19e286 = {
         "Cookie": _0x106c4d,
         "user-agent": _0x5f1259
@@ -370,15 +387,15 @@ async function _0x5a1592(_0x3b367d, _0x1ef5ce) {
     });
 }
 const _0x1aab37 = {
-    "checkCk": _0x539aac,
+    "checkCk": checkCk,
     "User_Agent": _0x5f1259,
     "getToken": _0x458c4f,
     "sign": _0x249dba,
     "wait": _0x5d2ff1,
     "validateCarmeWithType": _0x171be3,
     "randomString": _0x12ee09,
-    "getCookies": _0x37e70a,
-    "getUserInfo": _0x4ba1f4,
+    "getCookies": getCookies,
+    "getUserInfo": getUserInfo,
     "validateCarmeNoCon": _0x53fee8,
     "getCookieMap": _0x10d424,
     "invalidCookieNotify": _0x40ed21,

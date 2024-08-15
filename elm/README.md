@@ -1,6 +1,7 @@
 # 饿了么乐园币
 
 https://github.com/Shuying-exquisite/elm
+https://github.com/suhaojian/elm
 
 饿了么一天 xxxx 币，跑之前去完成新人任务，实名认证，每个游戏都去过一关，600-700的原因是没有过新人任务，没有实名认证
 
@@ -13,3 +14,14 @@ ios饿了么CK抓取
 
 ### ck格式
 cookie2=28f45f6606a6edbb6506b43e43e6d95ae;unb=2216828710111;USERID=3100090148832;SID=MjhmNDVmNjYwNmE2ZWRiYjY1MDZiNDNlNDNlNmQ5NWFlMV6YQEvcnzzEpdlkrlr5rQ==;
+
+## 测试
+梦幻小院： 84
+玩贪吃蛇---50
+玩经营美食摊---80
+玩梦幻小院---84
+玩福尔魔方---300
+浇水---100
+2048---100
+合成甜蜜蜜---30
+

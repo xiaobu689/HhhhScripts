@@ -9,6 +9,7 @@ cron: 58 7,11,19 * * *
 const $ = new Env("顺义创城抢兑【多账号】");
 -------------------------------
 20240813 增加代理配置，测试不用代理也可以到账，避免后面接口升级，懒得经常查看
+20240815 优化了下推送信息过滤
 -------------------------------
 """
 
@@ -138,11 +139,13 @@ async def main():
                 with open(file_name, 'a', newline='') as file:
                     writer = csv.writer(file)
                     writer.writerow([phone_number])
-                print(f"✅ 抢兑成功，手机号 {phone_number} 已记录到 sycc_tx_success.csv 文件中")
-        messages.append(result)
+                msg = f'✅ 抢兑成功|{phone_number}'
+                print(msg)
+                messages.append(msg)
 
     # 消息推送
-    send("顺义创城抢兑结果通知", "\n".join(messages))
+    if len(messages) > 0:
+        send("顺义创城抢兑结果通知", "\n".join(messages))
 
 
 if __name__ == '__main__':
