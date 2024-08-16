@@ -5,7 +5,7 @@ import os
 choice_base_desc = "这是一个选择题，请选择出正确答案后直接回答A或B或C或D，严格按照以下格式回答：芝麻开门#你的答案#芝麻开门\n"
 
 
-def get_response(content):
+def get_gpt_response(content):
     client = OpenAI(
         api_key=os.getenv("QIANWEN"),
         base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
@@ -22,4 +22,12 @@ def get_response(content):
     data = json.loads(content)
     extracted_content = data['choices'][0]['message']['content']
 
-    return extracted_content
+    return extract_answer(extracted_content)
+
+
+def extract_answer(content):
+    parts = content.split('#')
+    if len(parts) >= 3:
+        return parts[1]
+    else:
+        return ""
