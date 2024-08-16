@@ -1,6 +1,10 @@
+import os
 import uuid
 from datetime import datetime
 import json
+from http import HTTPStatus
+
+import dashscope
 import requests
 import random
 import re
@@ -8,38 +12,35 @@ import time
 import base64
 import hashlib
 from urllib3.exceptions import InsecureRequestWarning, InsecurePlatformWarning
+
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
 
-# import os
-# from http import HTTPStatus
-# import dashscope
-
 
 # 通义千问API
-def qianwen_messages(basic_question, question):
-    content = ''
-    # qw_key = os.getenv("QIANWEN_KEY")
-    # if not qw_key:
-    #     print(f'⛔️未获取到通义千问key：请检查变量 {qw_key} 是否填写')
-    # else:
-    #     dashscope.api_key = qw_key
-    #     messages = [{'role': 'system', 'content': 'You are a helpful assistant.'},
-    #                 {'role': 'user', 'content': basic_question + question}]
-    #     response = dashscope.Generation.call(
-    #         dashscope.Generation.Models.qwen_turbo,
-    #         messages=messages,
-    #         seed=random.randint(1, 10000),
-    #         result_format='message',
-    #     )
-    #     if response.status_code == HTTPStatus.OK:
-    #         content = response['output']['choices'][0]['message']['content']
-    #     else:
-    #         print('Request id: %s, Status code: %s, error code: %s, error message: %s' % (
-    #             response.request_id, response.status_code,
-    #             response.code, response.message
-    #         ))
-    return content
+# def qianwen_messages(basic_question, question):
+#     content = ''
+#     qw_key = os.getenv("QIANWEN_KEY")
+#     if not qw_key:
+#         print(f'⛔️未获取到通义千问key：请检查变量 {qw_key} 是否填写')
+#     else:
+#         dashscope.api_key = qw_key
+#         messages = [{'role': 'system', 'content': 'You are a helpful assistant.'},
+#                     {'role': 'user', 'content': basic_question + question}]
+#         response = dashscope.Generation.call(
+#             dashscope.Generation.Models.qwen_turbo,
+#             messages=messages,
+#             seed=random.randint(1, 10000),
+#             result_format='message',
+#         )
+#         if response.status_code == HTTPStatus.OK:
+#             content = response['output']['choices'][0]['message']['content']
+#         else:
+#             print('Request id: %s, Status code: %s, error code: %s, error message: %s' % (
+#                 response.request_id, response.status_code,
+#                 response.code, response.message
+#             ))
+#     return content
 
 
 def make_request(url, json_data=None, method='get', headers=None):
@@ -240,6 +241,7 @@ def sha256(data):
     """
     return hashlib.sha256(data.encode()).hexdigest()
 
+
 def generate_upper_uuid():
     # 生成一个UUID
     generated_uuid = uuid.uuid4()
@@ -248,6 +250,7 @@ def generate_upper_uuid():
     formatted_uuid = str(generated_uuid).upper()
 
     return formatted_uuid
+
 
 def generate_lower_uuid():
     """
@@ -301,6 +304,7 @@ def calculate_sha1_hash(data):
     hash_value = sha1.hexdigest()
 
     return hash_value
+
 
 def get_millisecond_timestamp():
     """

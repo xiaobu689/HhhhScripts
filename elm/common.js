@@ -236,7 +236,7 @@ function _0x316481(_0x556b66) {
 //     return cookiesStr && (cookiesStr.indexOf("&") > -1 ? cookiesArray = cookiesStr.split("&") : cookiesStr.indexOf("\n") > -1 ? cookiesArray = cookiesStr.split("\n") : cookiesArray = [cookiesStr]), cookiesArray;
 // }
 
-// 更改CK格式，兼容公众号更新CK
+// 更改CK格式，兼容公众号更新
 function getCookies(envVarName = "elmck") {
     let tokensArray = [];
     let envVarValue = process.env[envVarName];

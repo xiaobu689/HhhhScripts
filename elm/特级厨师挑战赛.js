@@ -1,3 +1,8 @@
+/**
+* 饿了么特级厨师挑战赛
+* cron: 38 7 * * *
+* const $ = new Env("饿了么特级厨师挑战赛");
+*/
 const {
   sign,
   getToken,
@@ -191,7 +196,7 @@ function Env(t, e) {
       if (i) {
         try {
           s = JSON.parse(this.getdata(t));
-        } catch {}
+        } catch { }
       }
       return s;
     }
@@ -327,7 +332,7 @@ function Env(t, e) {
       this.ckjar = this.ckjar ? this.ckjar : new this.cktough.CookieJar();
       t && (t.headers = t.headers ? t.headers : {}, void 0 === t.headers.Cookie && void 0 === t.cookieJar && (t.cookieJar = this.ckjar));
     }
-    get(t, e = () => {}) {
+    get(t, e = () => { }) {
       t.headers && (delete t.headers["Content-Type"], delete t.headers["Content-Length"]);
       this.isSurge() || this.isLoon() ? (this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, {
         "X-Surge-Skip-Scripting": !1
@@ -380,7 +385,7 @@ function Env(t, e) {
         e(s, i, i && i.body);
       }));
     }
-    post(t, e = () => {}) {
+    post(t, e = () => { }) {
       if (t.body && t.headers && !t.headers["Content-Type"] && (t.headers["Content-Type"] = "application/x-www-form-urlencoded"), t.headers && delete t.headers["Content-Length"], this.isSurge() || this.isLoon()) {
         this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, {
           "X-Surge-Skip-Scripting": !1

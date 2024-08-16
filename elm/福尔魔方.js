@@ -1,6 +1,6 @@
 /**
  * 饿了么福尔魔方
- * cron 0 5 5 * * *
+ * cron: 7 17 * * *
  * const $ = new Env("饿了么福尔魔方");
  */
 
@@ -140,7 +140,7 @@ async function _0x12d072() {
         console.log("账号的 id 为", _0x324e0d);
         await _0x109797(_0x460a66);
         console.log("防止挤爆了，延时 1 秒");
-        await _0x5ad5ca(1);
+        await _0x5ad5ca(10);
     }
     process.exit(0);
 }
