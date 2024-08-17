@@ -57,8 +57,11 @@ class JSB():
             score = response_json['data']['memberInfo']['score']
             phone = response_json['data']['memberInfo']['phone']
             print(f'🐶{nickname} | 🐱{phone} | 💰{score}积分')
+            return True
         else:
             save_result_to_file("error", self.name)
+            print(f'❌获取用户信息失败|{response_json["msg"]}')
+            return False
 
     def sign(self):
         response = requests.post('https://fscrm.kraftheinz.net.cn/crm/public/index.php/api/v1/dailySign',
@@ -134,9 +137,9 @@ class JSB():
     def exchange_reward(self):
         data = {
             'value': '全网10元话费',
-            'phone': '17854279565',
+            'phone': '178xxxx9565',
             'type': '话费',
-            'memberId': '302061',
+            'memberId': '30xxxx1',
         }
 
         response = requests.post(
@@ -157,10 +160,11 @@ class JSB():
                 send("卡夫亨积分达标通知", msg)
 
     def main(self):
-        self.user_info()
-        self.sign()
-        time.sleep(random.randint(5, 10))
-        self.share_cookbook_task()
+        if self.user_info():
+            self.sign()
+            time.sleep(random.randint(5, 10))
+            self.share_cookbook_task()
+
 
 
 if __name__ == '__main__':
