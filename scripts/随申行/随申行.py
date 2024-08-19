@@ -22,8 +22,6 @@ import requests
 from datetime import datetime
 from common import make_request, save_result_to_file
 from urllib3.exceptions import InsecureRequestWarning, InsecurePlatformWarning
-from common import qianwen_messages
-
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
 from sendNotify import send

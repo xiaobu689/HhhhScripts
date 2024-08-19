@@ -8,7 +8,7 @@
 抓任意包请求头 sectoken
 变量名: TCLX_TOKEN
 
-cron: 0 0,15 * * *
+cron: 0 0 * * *
 const $ = new Env("同程旅行");
 """
 import os
