@@ -60,7 +60,7 @@ class JSB():
             return True
         else:
             save_result_to_file("error", self.name)
-            print(f'❌获取用户信息失败|{response_json["msg"]}')
+            print(f'❌账号CK已过期，请重新获取！')
             return False
 
     def sign(self):

@@ -1,7 +1,7 @@
 """
 顺义创城抢兑【多账号】
 
-【多账号版】
+【多账号】
 抓任意包请求头 x_applet_token
 变量名: SYCC_TOKEN
 
@@ -109,7 +109,6 @@ async def main():
         if phone not in existing_phones:
             tokens_.append(token)
 
-    # 生成代理
     proxies = pinzan_proxy(len(tokens_), 3, '110100')
 
     now = datetime.now()

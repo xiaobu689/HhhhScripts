@@ -160,14 +160,15 @@ class RUN():
 
     def get_answer(self, question_str):
         if self.gpt_answer:
-            print("本次使用GPT回答")
             answer = get_gpt_response(question_str)
+            print(f"本次使用GPT回答，GPT给出的答案为：{answer}")
             if answer == "":
                 answer = random.choice(['A', 'B', 'C', 'D'])
             return answer
         else:
-            print("本次盲答")
-            return random.choice(['A', 'B', 'C', 'D'])
+           answer = random.choice(['A', 'B', 'C', 'D'])
+           print(f"本次盲答, 随机选出的答案为: {answer}")
+           return
 
     def answer_question(self, questions_hid, my_answer):
         print('开始答题')
@@ -182,13 +183,15 @@ class RUN():
             answer = response_json['data']['answer']  # C.造价低
             score = response_json['data']['answer_score']
             # 回答正确|state=2
-            if answer.split('.')[0] == my_answer:
+            right_answer = answer.split('.')[0]
+            if right_answer == my_answer:
                 print(f'✅恭喜你！回答正确 | 积分+{score}')
             else:
-                print(f'❌很遗憾！回答错误 | 积分+{score}')
+                print(f'❌很遗憾！回答错误 | 正确答案: {right_answer}')
 
     def main(self):
         if self.user_info():
+            exit(0)
             self.sign()
             time.sleep(random.randint(10, 15))
             self.article_list()

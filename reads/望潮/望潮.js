@@ -34,7 +34,7 @@ async function main() {
     Utils = await loadUtils();
     let arr = WangChao.split("&");
     for (const item of arr) {
-        if (useProxy && item !== accounts[0]) {
+        if (useProxy && item !== arr[0]) {
             console.log("🌐本次任务使用代理");
             globalProxyServer = await pinzanProxy(1, 5);
         } else {
@@ -361,6 +361,7 @@ async function loginGet(url) {
                     console.log(`${$.name} API请求失败，请检查网路重试`)
                 } else {
                     await $.wait(2000)
+                    console.log("-------------111111111resp=", resp)
                     if ($.isNode()) {
                         readCookie = resp.headers['set-cookie'][0];
                     } else {
