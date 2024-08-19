@@ -340,10 +340,7 @@ class SYCC():
 
         print(f"\n======== ▷ 拼图游戏 ◁ ========")
         self.game_pintu_task()
-        time.sleep(random.randint(5, 15))
-
-        print(f"\n======== ▷ 抽奖 ◁ ========")
-        self.dzsyhfq_task()
+        time.sleep(random.randint(5, 10))
 
 
 if __name__ == '__main__':
