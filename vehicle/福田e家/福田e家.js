@@ -13,7 +13,7 @@
 
 const name = "福田e家"
 const $ = new Env(name);
-const userCookie = ($.isNode() ? JSON.parse(process.env.DFJS) : $.getjson("FTEJ")) || [];
+const userCookie = ($.isNode() ? JSON.parse(process.env.FTEJ) : $.getjson("FTEJ")) || [];
 let httpResult, httpReq, httpResp
 let userList = []
 let userIdx = 0
@@ -31,7 +31,7 @@ class UserInfo {
             this.user = phoneNum(`${this.ck[0]}`)
             this.ckValid = true
         } catch (e) {
-
+            console.log("获取CK失败")
         }
     }
 
@@ -39,7 +39,6 @@ class UserInfo {
         try {
             let url = `https://czyl.foton.com.cn/ehomes-new/homeManager/getLoginMember`;
             let body = `{"password":"${this.ck[1]}","version_name":"","version_auth":"","device_id":"","device_model":"","ip":"","name":"${this.ck[0]}","version_code":"180","deviceSystemVersion":"","device_type":"0"}`;
-            //console.frida_log(body)
             let h = {
                 "Host": "czyl.foton.com.cn",
                 "Content-Type": "application/json;charset\u003dutf-8",
@@ -639,10 +638,7 @@ class UserInfo {
     if (typeof $request !== "undefined") {
         await GetRewrite()
     } else {
-
         if (!(await checkEnv())) return;
-
-
 
         if (userList.length > 0) {
             console.log('\n------- 福田e家-------\n')
@@ -651,12 +647,6 @@ class UserInfo {
                 taskall.push(user.cashck())
             }
             await Promise.all(taskall)
-            // console.frida_log('\n------- 卡车生活-------\n')
-            // taskall = []
-            // for (let user of userList) {
-            //     taskall.push(user.kclogin())
-            // }
-            // await Promise.all(taskall)
         }
 
     }

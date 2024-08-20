@@ -175,7 +175,6 @@ if __name__ == '__main__':
         exit(0)
 
     try:
-        # 解析 JSON 字符串
         json_data = json.loads(tokenStr)
         print(f"共获取到{len(json_data)}个账号")
     except json.JSONDecodeError:

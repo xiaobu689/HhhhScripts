@@ -123,13 +123,6 @@ class CST():
             save_result_to_file("error", self.name)
 
     def daily_task(self):
-        '''
-        ✅TAS_6645F56080A21CDU80 | 7天完成10次扫码乘车 | 任务领取后扫码乘车10次即可领奖>
-        ✅TAS_66AB306670C7F1F7U4 | 浏览城市通酒店 | 体验城市通酒店即可领积分
-        ✅TAS_66AB29U590B6478U16 | 浏览城市通火车票 | 体验城市通火车票即可领积分
-        ✅TAS_66AB2C5270C7F1846C | 浏览城市通机票 | 体验城市通机票即可领积分
-        ✅TAS_6645F68A70A21U4C23 | 每日观看5个视频广告 | 成功观看5个视频广告即可领取奖励>
-        '''
         traceId = get_current_timestamp_milliseconds()
         json_data = {
             'deviceSystem': 'ios',
@@ -154,41 +147,35 @@ class CST():
             for task in tasks:
                 main_title = task["mainTitle"]
                 task_code = task["taskCode"]
-                if task_code in ["TAS_6645F56080A21CDU80", "TAS_66AAFUA880C7D1A198", "TAS_6645CC9880A20B2DD1", "TAS_66AB312370C7F20BB2"]:
+                if task_code in ["TAS_6645F56080A21CDU80", "TAS_66AAFUA880C7D1A198", "TAS_6645CC9880A20B2DD1",
+                                 "TAS_66AB312370C7F20BB2"]:
                     continue
                 if task["state"] == 3:
                     print(f'✅任务已完成 | {task_code} | {main_title}')
-                # 每日观看5个视频广告
-                if task_code == "TAS_6645F68A70A21U4C23":
+                else:
+                    # 做任务
                     print(f'🌼开始任务 | {task_code} | {main_title}')
                     self.taskCode = task_code
                     if task["recordNo"] != "":
                         self.recordNo = task["recordNo"]
-                # 浏览城市通机票
-                elif task_code == "TAS_66AB2C5270C7F1846C":
-                    print(f'🌼开始任务 | {task_code} | {main_title}')
-                    self.taskCode = task_code
-                    if task["recordNo"] != "":
-                        self.recordNo = task["recordNo"]
-                # 浏览城市通火车票
-                elif task_code == "TAS_66AB29U590B6478U16":
-                    print(f'🌼开始任务 | {task_code} | {main_title}')
-                    self.taskCode = task_code
-                    if task["recordNo"] != "":
-                        self.recordNo = task["recordNo"]
-                # 浏览城市通酒店
-                elif task_code == "TAS_66AB306670C7F1F7U4":
-                    print(f'🌼开始任务 | {task_code} | {main_title}')
-                    self.taskCode = task_code
-                    if task["recordNo"] != "":
-                        self.recordNo = task["recordNo"]
-                # 做任务
-                self.receive_task()
-                time.sleep(random.randint(10, 15))
-                self.complete_task()
-                time.sleep(random.randint(10, 15))
-                self.receive_rewards()
-                time.sleep(random.randint(10, 15))
+
+                    # 领取任务
+                    self.receive_task()
+                    time.sleep(random.randint(10, 15))
+
+                    # 完成任务
+                    i = 0
+                    if self.taskCode == "TAS_6645F68A70A21U4C23" or self.taskCode == "TAS_66B48FFF80CC6AA9UC":
+                        i = 5
+                    else:
+                        i = 1
+                    for i in range(i):
+                        self.complete_task()
+                        time.sleep(random.randint(10, 15))
+
+                    # 领取奖励
+                    self.receive_rewards()
+                    time.sleep(random.randint(10, 15))
 
     def receive_task(self):
         json_data = {
@@ -255,7 +242,7 @@ class CST():
         response = make_request(url, json_data=json_data, method='post', headers=self.taskHeaders)
         if response and response["code"] == 1000:
             print(
-                f'✅领取成功 | 金币：{response["data"]["awardAmount"]} | 价值：{response["data"]["awardDeductionAmount"]}元')
+                f'✅金币领取成功 | 金币：{response["data"]["awardAmount"]} | 价值：{response["data"]["awardDeductionAmount"]}元')
         else:
             print(f'❌领取失败')
 
@@ -457,7 +444,6 @@ class CST():
         # 400积分兑换2元地铁券
         self.exchange_400(self.totalScore)
         time.sleep(random.randint(5, 10))
-
 
 
 if __name__ == '__main__':

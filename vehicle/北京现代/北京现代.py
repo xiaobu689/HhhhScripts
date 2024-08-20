@@ -68,22 +68,29 @@ class RUN():
             diff_score = score_value - self.pre_score
             print(f'👻用户: {phone} | 总积分: {score_value} |今日新增积分: {diff_score}')
 
-    def sign(self):
-        score = ''
+    def do_sign(self):
+        score = 0
         hid = ''
         url = 'https://bm2-api.bluemembers.com.cn/v1/app/user/reward_list'
-        response_json = requests.get(url, headers=self.headers).json()
-        if response_json['code'] == 0:
-            hid = response_json['data']['hid']
-            rewardHash = response_json['data']['rewardHash']
-            list = response_json['data']['list']
-            for item in list:
-                if item["hid"] == hid:
-                    score = item["score"]
-                    print(f'tip: 如果签到成功, 积分+{score}')
 
-        time.sleep(random.randint(5, 10))
+        while score < 5:
+            response_json = requests.get(url, headers=self.headers).json()
+            if response_json['code'] == 0:
+                hid = response_json['data']['hid']
+                rewardHash = response_json['data']['rewardHash']
+                list = response_json['data']['list']
+                for item in list:
+                    if item["hid"] == hid:
+                        score = item["score"]
+                        if score >= 5:
+                            print(f'tip: 如果签到成功, 积分+{score}')
+                            self.sign(hid, rewardHash, score)
+                            break
+                        else:
+                            print('预计签到成功，所得积分太低，重新初始化！')
+            time.sleep(random.randint(10, 20))
 
+    def sign(self, hid, rewardHash, score):
         # 状态上报
         json_data = {
             'hid': hid,
@@ -161,13 +168,13 @@ class RUN():
     def get_answer(self, question_str):
         if self.gpt_answer:
             answer = get_gpt_response(question_str)
-            print(f"本次使用GPT回答，GPT给出的答案为：{answer}")
+            print(f"本次使用GPT回答，GPT给出的答案是：{answer}")
             if answer == "":
                 answer = random.choice(['A', 'B', 'C', 'D'])
             return answer
         else:
            answer = random.choice(['A', 'B', 'C', 'D'])
-           print(f"本次盲答, 随机选出的答案为: {answer}")
+           print(f"本次盲答, 随机选出的答案是: {answer}")
            return
 
     def answer_question(self, questions_hid, my_answer):
@@ -179,6 +186,7 @@ class RUN():
         }
         url = 'https://bm2-api.bluemembers.com.cn/v1/app/special/daily/ask_answer'
         response_json = requests.post(url, headers=self.headers, json=json_data).json()
+        print("response_json=", response_json)
         if response_json['code'] == 0:
             answer = response_json['data']['answer']  # C.造价低
             score = response_json['data']['answer_score']

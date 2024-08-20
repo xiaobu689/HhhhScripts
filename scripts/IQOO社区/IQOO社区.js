@@ -15,6 +15,9 @@ let time = ''
 let token = ''
 let xVisitor = ''
 let notice = ''
+let phone_number = ''
+let pre_score = 0
+let diff_score = 0
 !(async () => {
     if (typeof $request != "undefined") {
         await getCookie();
@@ -25,30 +28,36 @@ let notice = ''
 
 async function main() {
     for (const item of IQOO) {
-        id = item.id;
+        id = item.userId;
         token = item.token;
         xVisitor = item.xVisitor;
         console.log(`用户：${id}开始任务`)
         time = Math.floor(Date.now() / 1e3)
-        //签到
-        console.log("开始签到")
-        let sign = await commonPost('/v3/sign', { "from": "" }, getSign('POST', '/api/v3/sign', { "from": "" }));
-        if (sign.Code == -4011) {
+
+        // 用户信息
+        let userInfo = await commonGet(`/v3/user?userId=${id}`, getSign('GET', '/api/v3/user', { "userId": id }));
+        if (userInfo.Code != 0) {
             $.msg($.name, `用户：${id}`, `token已过期，请重新获取`);
             saveResultToFile("error", name)
             continue
+        } else {
+            const phone = userInfo.Data.mobile
+            pre_score = userInfo.Data.score
+            phone_number = phone
+            saveResultToFile("success", `$.name|${phone}`)
         }
+
+        //签到
+        console.log("开始签到")
+        let sign = await commonPost('/v3/sign', { "from": "" }, getSign('POST', '/api/v3/sign', { "from": "" }));
         if (sign.Code == 0) {
-            saveResultToFile("success", name)
             for (const item of sign.Meta.tips) {
                 console.log(item.message)
             }
         } else if (sign.Code == -13006) {
             // 已签到
-            saveResultToFile("success", name)
             console.log(sign.Message)
         } else {
-            saveResultToFile("error", name)
             console.log(sign.Message)
         }
         //幸运抽奖
@@ -186,12 +195,13 @@ async function main() {
         console.log("————————————")
         console.log("查询酷币")
         let user = await commonGet(`/v3/user?userId=${id}`, getSign('GET', '/api/v3/user', { "userId": id }));
-        console.log(`拥有酷币: ${user.Data.score}\n`)
-        notice += `用户：${id} | 手机: ${user.Data.mobile} | 拥有酷币: ${user.Data.score}\n`
+        diff_score = user.Data.score - pre_score
+        console.log(`用户: ${phone_number}|拥有酷币: ${user.Data.score}|今日新增酷币: ${diff_score}\n`)
+        // notice += `用户：${id} | 手机: ${user.Data.mobile} | 拥有酷币: ${user.Data.score}\n`
     }
-    if (notice) {
-        $.msg($.name, '', notice);
-    }
+    // if (notice) {
+    //     $.msg($.name, '', notice);
+    // }
 }
 
 async function getCookie() {
@@ -228,20 +238,16 @@ async function commonGet(url, signature) {
         const options = {
             url: `https://bbs-api.iqoo.com/api${url}`,
             headers: {
+                'Host': 'bbs-api.iqoo.com',
+                'Connection': 'keep-alive',
+                'X-Platform': 'mini',
                 'content-type': 'application/json',
-                'xweb_xhr': '1',
-                'x-visitor': xVisitor,
-                'x-platform': 'mini',
-                'sign': `IQOO-HMAC-SHA256 appid=1002,timestamp=${time},signature=${signature}`,
-                'authorization': token,
-                'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-                'accept': '*/*',
-                'Sec-Fetch-Site': 'cross-site',
-                'Sec-Fetch-Mode': 'cors',
-                'Sec-Fetch-Dest': 'empty',
-                'Referer': `https://servicewechat.com/wxcf4266fbc9463132/185/page-frame.html`,
-                'Accept-Encoding': 'gzip, deflate, br, zstd',
-                'Accept-Language': 'zh-CN,zh;q=0.9',
+                'X-Visitor': xVisitor,
+                'SIGN': 'IQOO-HMAC-SHA256 appid=1002,timestamp=1724127300,signature=gdeARF63o1yNLaOuP8pv6A0DEEw3KQ0FCikcrog83P4=',
+                'Authorization': token,
+                'Accept-Encoding': 'gzip,compress,br,deflate',
+                'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.50(0x18003237) NetType/WIFI Language/zh_CN',
+                'Referer': 'https://servicewechat.com/wxcf4266fbc9463132/191/page-frame.html',
             }
         }
         $.get(options, async (err, resp, data) => {
@@ -268,12 +274,11 @@ async function commonPost(url, body, signature) {
             url: `https://bbs-api.iqoo.com/api${url}`,
             headers: {
                 'content-type': 'application/json',
-                'xweb_xhr': '1',
-                'x-visitor': xVisitor,
-                'x-platform': 'mini',
-                'sign': `IQOO-HMAC-SHA256 appid=1002,timestamp=${time},signature=${signature}`,
-                'authorization': token,
-                'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                'X-Visitor': xVisitor,
+                'X-Platform': 'mini',
+                'SIGN': `IQOO-HMAC-SHA256 appid=1002,timestamp=${time},signature=${signature}`,
+                'Authorization': token,
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
                 'accept': '*/*',
                 'Sec-Fetch-Site': 'cross-site',
                 'Sec-Fetch-Mode': 'cors',
