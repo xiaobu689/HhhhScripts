@@ -9,15 +9,12 @@ const $ = new Env("北京现代");
 import json
 import os
 import random
-import re
 import time
 from datetime import datetime
-
 import requests
 from urllib3.exceptions import InsecureRequestWarning, InsecurePlatformWarning
 from common import save_result_to_file
 from gpt import get_gpt_response
-
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
 
@@ -72,7 +69,6 @@ class RUN():
         score = 0
         hid = ''
         url = 'https://bm2-api.bluemembers.com.cn/v1/app/user/reward_list'
-
         while score < 5:
             response_json = requests.get(url, headers=self.headers).json()
             if response_json['code'] == 0:
@@ -87,8 +83,8 @@ class RUN():
                             self.sign(hid, rewardHash, score)
                             break
                         else:
-                            print('预计签到成功，所得积分太低，重新初始化！')
-            time.sleep(random.randint(10, 20))
+                            print(f'预计签到成功，可得{score}积分，太低不签，重新初始化！')
+            time.sleep(random.randint(20, 30))
 
     def sign(self, hid, rewardHash, score):
         # 状态上报
@@ -175,7 +171,7 @@ class RUN():
         else:
            answer = random.choice(['A', 'B', 'C', 'D'])
            print(f"本次盲答, 随机选出的答案是: {answer}")
-           return
+           return answer
 
     def answer_question(self, questions_hid, my_answer):
         print('开始答题')
@@ -187,20 +183,22 @@ class RUN():
         url = 'https://bm2-api.bluemembers.com.cn/v1/app/special/daily/ask_answer'
         response_json = requests.post(url, headers=self.headers, json=json_data).json()
         print("response_json=", response_json)
+        # response_json= {'code': 0, 'data': {'answer': '', 'answer_score': '', 'state': 3}, 'msg': '', 'title': ''}
         if response_json['code'] == 0:
-            answer = response_json['data']['answer']  # C.造价低
-            score = response_json['data']['answer_score']
-            # 回答正确|state=2
-            right_answer = answer.split('.')[0]
-            if right_answer == my_answer:
-                print(f'✅恭喜你！回答正确 | 积分+{score}')
-            else:
-                print(f'❌很遗憾！回答错误 | 正确答案: {right_answer}')
+            if response_json['data']['state'] == 3:
+                print('❌回答错误')
+            elif response_json['data']['state'] == 2:
+                answer = response_json['data']['answer']  # C.造价低
+                print("answer=", answer)
+                score = response_json['data']['answer_score']
+                print("score=", score)
+                print(f'✅回答正确|积分+{score}')
+        else:
+            print('❌答题异常')
 
     def main(self):
         if self.user_info():
-            exit(0)
-            self.sign()
+            self.do_sign()
             time.sleep(random.randint(10, 15))
             self.article_list()
             for i in range(3):
