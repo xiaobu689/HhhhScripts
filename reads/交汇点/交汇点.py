@@ -14,6 +14,8 @@ import time
 import requests
 from urllib3.exceptions import InsecureRequestWarning, InsecurePlatformWarning
 from common import save_result_to_file
+from gpt import get_gpt_response
+
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
 
@@ -23,6 +25,7 @@ class JHD():
 
     def __init__(self, token):
         self.token = token
+        self.gpt_answer = True  # 盲答改为False
         self.headers = {
             'Host': 'jhd.xhby.net',
             'deviceType': '0',
@@ -54,8 +57,10 @@ class JHD():
             print(f'🐶{nickname} | 📱{mobile} | 💰{scoreall}\n')
             content = f'{self.name}|{mobile}'
             save_result_to_file("success", self.name)
+            return True
         else:
             save_result_to_file("error", self.name)
+            return False
 
     def sign(self):
         url = 'https://jhd.xhby.net/account/api/v1/account/members/have-sign-in'
@@ -84,22 +89,32 @@ class JHD():
                 answer = choice["answer"]
                 question += f'{choice_}: {answer}\n'
             print(question)
-            return date_, uuid, examId
+            return date_, uuid, examId, question
+
+    def get_answer(self, question_str):
+        if self.gpt_answer:
+            answer = get_gpt_response(question_str)
+            print(f"本次使用GPT回答，GPT给出的答案是：{answer}")
+            if answer == "":
+                answer = random.choice(['A', 'B', 'C', 'D'])
+            return answer
+        else:
+            answer = random.choice(['A', 'B', 'C', 'D'])
+            print(f"本次盲答, 随机选出的答案是: {answer}")
+            return answer
 
     def answer_question(self):
-        date_, uuid, examId = self.daily_question()
-        # TODO 暂时盲答，后面接入GPT
-        userAnswer = random.choice(['A', 'B', 'C', 'D'])
+        date_, uuid, examId, question_str = self.daily_question()
+        userAnswer = self.get_answer(question_str)
         json_data = {
             'answerDate': date_,
             'answerFlag': '1',
-            'topicId': examId,  # 这里就是题目响应中的examId
+            'topicId': examId,
             'userAnswer': userAnswer,
-            'uuid': uuid,  # 题目列表中的uuid
+            'uuid': uuid,
         }
         url = 'https://jhd.xhby.net/activity/api/v1/mrdt/answer'
         response_json = requests.post(url, headers=self.headers, json=json_data).json()
-        print(response_json)
         if response_json['code'] == 0:
             rightAnswer = response_json['data']['rightAnswer']
             if userAnswer == rightAnswer:
@@ -149,7 +164,11 @@ class JHD():
             'storytype': '1',
         }
         url = 'https://jhd.xhby.net/interaction/api/v1/interaction/article-extnums/share'
-        response_json = requests.post(url, headers=self.headers, json=json_data).json()
+        response = requests.post(url, headers=self.headers, json=json_data)
+        if not response or response.status_code != 200:
+            print('❌分享文章失败')
+            return
+        response_json = response.json()
         if response_json["code"] == 0:
             print(f'✅分享文章成功')
         else:
@@ -216,6 +235,7 @@ class JHD():
         if len(article_list) <= 0:
             print("没有文章")
             return
+
         # 分享文章 && 点赞文章 &&评论文章
         for i in range(20):
             article = random.choice(article_list)
@@ -241,19 +261,17 @@ class JHD():
                 # time.sleep(random.randint(5, 10))
 
     def main(self):
-        self.user_info()
-        time.sleep(random.randint(5, 10))
+        if self.user_info():
+            # 每日签到
+            self.sign()
+            time.sleep(random.randint(5, 10))
 
-        # 每日签到
-        self.sign()
-        time.sleep(random.randint(5, 10))
+            # 每日任务
+            self.daily_task()
+            time.sleep(random.randint(5, 10))
 
-        # 每日任务
-        self.daily_task()
-        time.sleep(random.randint(5, 10))
-
-        # 每日答题
-        self.answer_question()
+            # 每日答题
+            self.answer_question()
 
 
 if __name__ == '__main__':
