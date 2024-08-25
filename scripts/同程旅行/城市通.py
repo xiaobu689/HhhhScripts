@@ -139,7 +139,7 @@ class CST():
         }
         url = 'https://cvg.17usoft.com/marketingbff/saveMoneyZone/userQueryTaskList'
         response = make_request(url, json_data=json_data, method='post', headers=self.taskHeaders)
-        print(response)
+        # print(response)
         if response and response["code"] == 1000:
             activityCode = response["data"]["activityCode"]
             self.activityCode = activityCode
@@ -442,8 +442,8 @@ class CST():
         time.sleep(random.randint(5, 10))
 
         # 400积分兑换2元地铁券
-        self.exchange_400(self.totalScore)
-        time.sleep(random.randint(5, 10))
+        # self.exchange_400(self.totalScore)
+        # time.sleep(random.randint(5, 10))
 
 
 if __name__ == '__main__':

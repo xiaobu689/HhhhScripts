@@ -231,7 +231,6 @@ class JHD():
 
     def daily_task(self):
         article_list = self.article_list()
-        print(f"文章数量: {len(article_list)}")
         if len(article_list) <= 0:
             print("没有文章")
             return

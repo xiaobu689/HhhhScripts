@@ -11,6 +11,7 @@
 20240717 增加自动领养宠物
 20240808 增加浏览兜豆商城任务
 20240815 更新兜豆领取API && 移除废弃活动
+20240822 修复宠物自动领养失败问题
 ---------------------------------
 cron: 0 0 * * *
 const $ = new Env("随申行");
@@ -22,6 +23,7 @@ import requests
 from datetime import datetime
 from common import make_request, save_result_to_file
 from urllib3.exceptions import InsecureRequestWarning, InsecurePlatformWarning
+
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 requests.packages.urllib3.disable_warnings(InsecurePlatformWarning)
 from sendNotify import send
@@ -89,35 +91,31 @@ class SSX():
         else:
             save_result_to_file("error", self.name)
 
-    def user_game_list(self):
-        gameName = ''
-        json_data = {
-            'language': 'zh-cn',
-        }
-        url = 'https://api.shmaas.net/cap/base/credits/v2/queryUserGameList'
-        response = make_request(url, json_data=json_data, method='post', headers=self.headers)
-        if response and response['errCode'] == 0:
-            for i in response['data']['gameCardInfo']:
-                if i["type"] == 2:  # type 2喂养中
-                    self.adoptingId = i["gameId"]
-                    if i["gameId"] == '998':
-                        gameName = '和平鸽'
-                    elif i["gameId"] == '999':
-                        gameName = '白玉兰'
-                    self.adoptingName = gameName
-                    break
-
-    def get_game_info(self):
+    def game_task(self):
         msg = ''
+        adoptingName = ''
         url = 'https://api.shmaas.net/cap/base/credits/queryNowAdoptInfo'
         data = {"language": "zh-cn"}
-        response = requests.post(url, headers=self.headers, json=data).json()
-        msg += f'✅领养物: {self.adoptingName}\n'
-        msg += f'✅当前等级：{response["data"]["feedUserGameNew"]["level"]}\n'
-        msg += f'✅喂养进度：{response["data"]["feedUserGameNew"]["nowScore"]}/{response["data"]["feedUserGameNew"]["needScore"]}\n'
-
-        self.msg += msg
-        print(msg)
+        response_json = requests.post(url, headers=self.headers, json=data).json()
+        # print(response_json)
+        if response_json['errCode'] == 0:
+            ganmeId = response_json['data']['feedUserGameNew']['gameId']
+            if ganmeId == 0:
+                print("当前没有正在喂养的宠物，开始领养")
+                self.adopt()
+                self.feed()
+            else:
+                if adoptingName == 998:
+                    adoptingName = '和平鸽'
+                elif adoptingName == 999:
+                    adoptingName = '白玉兰'
+                self.adoptingId = ganmeId
+                self.adoptingName = adoptingName
+                msg += f'✅领养物: {adoptingName}\n'
+                msg += f'✅当前等级：{response_json["data"]["feedUserGameNew"]["level"]}\n'
+                msg += f'✅喂养进度：{response_json["data"]["feedUserGameNew"]["nowScore"]}/{response_json["data"]["feedUserGameNew"]["needScore"]}\n'
+                print(msg)
+                self.feed()
 
     # 领养宠物
     def adopt(self):
@@ -128,6 +126,8 @@ class SSX():
             gameName = '和平鸽'
         elif gameId == '999':
             gameName = '白玉兰'
+        self.adoptingId = gameId
+        self.adoptingName = gameName
         json_data = {
             'language': 'zh-cn',
             'gameId': gameId,
@@ -138,6 +138,8 @@ class SSX():
         if response_json['errCode'] == 0:
             msg = f'✅领养成功！| 拿下: {gameName}'
             print(msg)
+            # 领养成功通知
+            send("随申行宠物喂养完成通知", "新一轮的宠物已成功领养，上一轮的兜豆奖励已自动到账余额，请及时查看！")
         else:
             msg = f'❌领养失败，{response_json["errMsg"]}'
             print(msg)
@@ -149,19 +151,17 @@ class SSX():
             'language': 'zh-cn',
             'gameId': self.adoptingId
         }
-        response = requests.post(url, headers=self.headers, json=data).json()
-        now_score = response["data"]["feedUserGameNew"]["nowScore"]
-        need_score = response["data"]["feedUserGameNew"]["needScore"]
+        response_json = requests.post(url, headers=self.headers, json=data).json()
         msg = f'-----------------------------------\n'
-        if response['errCode'] == 0:
+        # 喂养成功后，now_score变为0
+        if response_json['errCode'] == 0:
+            now_score = response_json["data"]["feedUserGameNew"]["nowScore"]
+            need_score = response_json["data"]["feedUserGameNew"]["needScore"]
             msg += f'✅喂养成功，更新等级进度：{now_score - 10}/{need_score}➡️{now_score}/{need_score}\n'
-            if now_score == 100:
-                print("✅喂养完成，开始领养新的宠物")
-                self.adopt()
-        elif response['errCode'] == -2763250:
+        elif response_json['errCode'] == -2763250:
             msg += f'✅今天已经喂养过了，明天再来吧!\n'
         else:
-            msg += f'❌喂养失败，{response["errMsg"]}\n'
+            msg += f'❌喂养失败，{response_json["errMsg"]}\n'
 
         self.msg += msg
         print(msg)
@@ -297,17 +297,14 @@ class SSX():
         title = "随申行"
         self.getUserInfo()
 
-        self.today_first_login()
-        time.sleep(random.randint(7, 15))
+        # self.today_first_login()
+        # time.sleep(random.randint(7, 15))
+        #
+        # self.ssx_sign()
+        # time.sleep(random.randint(5, 10))
 
-        self.ssx_sign()
-        time.sleep(random.randint(5, 10))
-
-        self.user_game_list()
-        self.get_game_info()
+        self.game_task()
         time.sleep(random.randint(7, 15))
-        self.feed()
-        time.sleep(random.randint(5, 10))
 
         self.view_mall()
         time.sleep(random.randint(5, 10))

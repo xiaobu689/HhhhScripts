@@ -2,7 +2,7 @@ import json
 from openai import OpenAI
 import os
 
-choice_base_desc = "这是一个选择题，请选择出正确答案后直接回答A或B或C或D，严格按照以下格式回答：芝麻开门#你的答案#芝麻开门\n"
+choice_base_desc = "这是一个选择题，请严格按照以下格式回答：芝麻开门#你的答案#芝麻开门\n"
 
 
 def get_gpt_response(content):
