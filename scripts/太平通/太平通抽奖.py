@@ -104,15 +104,12 @@ def lottery_task(token):
         print("登录成功")
         accessKey = response_json["value"]["accessKey"]
         phone = response_json["value"]["phone"]
-        accountId = response_json["value"]["accountId"]
 
         print(f"【{phone}】开始抽奖......")
         for i in range(100):
             lottery(i, token, accessKey, phone, activityCode)
             time.sleep(random.randint(5, 7))
-
         # 消息推送
-        print(msg)
         send("太平通抽奖", msg)
     else:
         print("登录异常")
