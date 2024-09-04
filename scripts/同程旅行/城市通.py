@@ -442,7 +442,7 @@ class CST():
         time.sleep(random.randint(5, 10))
 
         # 400积分兑换2元地铁券
-        # self.exchange_400(self.totalScore)
+        # self.exchange_400(self.totalScore)]
         # time.sleep(random.randint(5, 10))
 
 

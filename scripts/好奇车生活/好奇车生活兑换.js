@@ -6,7 +6,7 @@
 
 const $ = new Env('好奇车生活兑换')
 const Cheryfs = ($.isNode() ? process.env.Cheryfs : $.getdata('Cheryfs')) || '';
-let Cheryfs_GIFTID = '792556957722198016';
+let Cheryfs_GIFTID = '754493011522113536';
 let accountId = ''
 let openId = ''
 !(async () => {
@@ -30,7 +30,7 @@ async function main() {
     let exchangeType = queryByPointsMallCardId.result.exchangeType;
     let exchangeNeedPoints = queryByPointsMallCardId.result.exchangePointsValue;
     let exchangeNeedMoney = queryByPointsMallCardId.result.exchangeMoneyValue;
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 30; i++) {
         for (let j = 0; j < 2; j++) {
             let exchange = commonGet(`/pointsmall/exchangeCard?pointsMallCardId=${pointsMallCardId}&exchangeCount=${exchangeCount}&mallOrderInputVoStr=%7B%22person%22:%22%22,%22phone%22:%22%22,%22province%22:%22%22,%22city%22:%22%22,%22area%22:%22%22,%22address%22:%22%22,%22remark%22:%22%22%7D&channel=1&exchangeType=${exchangeType}&exchangeNeedPoints=${exchangeNeedPoints}&exchangeNeedMoney=${exchangeNeedMoney}&cardGoodsItemIds=`)
         }

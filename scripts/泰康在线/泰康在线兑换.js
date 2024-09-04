@@ -1,7 +1,7 @@
 /**
  * 泰康在线兑换
  *
- * cron 0 10 * * *
+ * cron 59 9 * * *
  */
 const $ = new Env('泰康在线兑换')
 const TKZX = ($.isNode() ? JSON.parse(process.env.TKZX) : $.getjson("TKZX")) || [];
@@ -37,6 +37,7 @@ async function main() {
     for (let i = 0; i < 30; i++) {
         let exchange = await commonJsonPost('/activity_execute/rest/membergoldbean/exchange', { "enc": true, "encData": encrypt(JSON.stringify(body)) })
         console.log(exchange)
+        // TODO 兑换成功通知
     }
 }
 
