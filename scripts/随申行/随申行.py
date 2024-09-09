@@ -297,11 +297,11 @@ class SSX():
         title = "随申行"
         self.getUserInfo()
 
-        # self.today_first_login()
-        # time.sleep(random.randint(7, 15))
-        #
-        # self.ssx_sign()
-        # time.sleep(random.randint(5, 10))
+        self.today_first_login()
+        time.sleep(random.randint(7, 15))
+
+        self.ssx_sign()
+        time.sleep(random.randint(5, 10))
 
         self.game_task()
         time.sleep(random.randint(7, 15))

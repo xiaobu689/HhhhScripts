@@ -122,7 +122,7 @@ async def main():
     tasks = []
     for i, token in enumerate(tokens_, start=1):
         token, phone, millisecond = token.split('#')
-        for _ in range(10):
+        for _ in range(15):
             api_proxies = proxies[i - 1].get('https')
             tasks.append(cashout(token, phone, api_proxies))
 
