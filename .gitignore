@@ -163,6 +163,7 @@ cython_debug/
 
 # HhhhSripts
 .idea
+/toulu
 /areverse
 discard/
 node_modules/
