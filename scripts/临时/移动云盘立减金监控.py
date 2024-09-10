@@ -11,8 +11,11 @@ import requests
 
 from sendNotify import send
 
+send_count = 0
+
 
 def get_cash_remaining():
+    global send_count
     headers = {
         'accept': '*/*',
         'accept-language': 'zh-CN,zh;q=0.9',
@@ -48,9 +51,12 @@ def get_cash_remaining():
             if prizeName == "5元微信立减金" or prizeName == '5元支付宝红包':
                 if dailyRemainderCount > 0:
                     print(f'微信立减金|支付宝红包有库存')
-                    send(f'{prizeName}补库存通知', f'{prizeName} | 当前剩余{dailyRemainderCount}/{dailyCount}')
+                    # 只推送3次消息
+                    if send_count < 3:
+                        send(f'{prizeName}补库存通知', f'{prizeName} | 当前剩余{dailyRemainderCount}/{dailyCount}')
+                        send_count += 1
     else:
-        print(f'奖品列表获取失败，token可能已失效')
+        print(f'奖品列表获取失败')
 
 
 if __name__ == '__main__':
