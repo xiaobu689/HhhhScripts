@@ -4,6 +4,9 @@
 cron: 30 8 * * *
 const $ = new Env("【临时】移动云盘美图秀秀立减金监控");
 """
+
+exit(0)
+
 import os
 import random
 import time
