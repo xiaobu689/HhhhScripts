@@ -15,7 +15,13 @@ from common import save_result_to_file
 import requests
 from urllib.parse import quote
 from urllib3.exceptions import InsecureRequestWarning, InsecurePlatformWarning
-
+import base64
+from Crypto.Cipher import PKCS1_v1_5 as Cipher_pkcs1_v1_5, AES
+from Crypto.PublicKey import RSA
+from Crypto.Util.Padding import pad
+publicKey_pj = '''-----BEGIN PUBLIC KEY-----
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQD6XO7e9YeAOs+cFqwa7ETJ+WXizPqQeXv68i5vqw9pFREsrqiBTRcg7wB0RIp3rJkDpaeVJLsZqYm5TW7FWx/iOiXFc+zCPvaKZric2dXCw27EvlH5rq+zwIPDAJHGAfnn1nmQH7wR3PCatEIb8pz5GFlTHMlluw4ZYmnOwg+thwIDAQAB
+-----END PUBLIC KEY-----'''
 
 class SHPJ():
     name = "诗画浦江"
@@ -341,29 +347,37 @@ class SHPJ():
         }
         return headers
 
+    # def rsa_encrypt(self, data):
+    #     url = "https://www.bejson.com/Bejson/Api/Rsa/pubEncrypt"
+    #     headers = {
+    #         "Accept": "application/json, text/javascript, */*; q=0.01",
+    #         "Accept-Encoding": "gzip, deflate, br",
+    #         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+    #         "Host": "www.bejson.com",
+    #         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36",
+    #     }
+    #     body = {
+    #         "publicKey": "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQD6XO7e9YeAOs+cFqwa7ETJ+WXizPqQeXv68i5vqw9pFREsrqiBTRcg7wB0RIp3rJkDpaeVJLsZqYm5TW7FWx/iOiXFc+zCPvaKZric2dXCw27EvlH5rq+zwIPDAJHGAfnn1nmQH7wR3PCatEIb8pz5GFlTHMlluw4ZYmnOwg+thwIDAQAB\n-----END PUBLIC KEY-----",
+    #         "encStr": data,
+    #         "etype": "rsa2"
+    #     }
+    #     response = requests.post(url, headers=headers, data=body)
+    #     if response.status_code == 200:
+    #         result = response.json()
+    #         if result["code"] == 200:
+    #             return result["data"]
+    #         else:
+    #             print(result["msg"])
+    #     else:
+    #         print(f"API请求失败，请检查网络重试: {response.status_code}")
+
     def rsa_encrypt(self, data):
-        url = "https://www.bejson.com/Bejson/Api/Rsa/pubEncrypt"
-        headers = {
-            "Accept": "application/json, text/javascript, */*; q=0.01",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "Host": "www.bejson.com",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36",
-        }
-        body = {
-            "publicKey": "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQD6XO7e9YeAOs+cFqwa7ETJ+WXizPqQeXv68i5vqw9pFREsrqiBTRcg7wB0RIp3rJkDpaeVJLsZqYm5TW7FWx/iOiXFc+zCPvaKZric2dXCw27EvlH5rq+zwIPDAJHGAfnn1nmQH7wR3PCatEIb8pz5GFlTHMlluw4ZYmnOwg+thwIDAQAB\n-----END PUBLIC KEY-----",
-            "encStr": data,
-            "etype": "rsa2"
-        }
-        response = requests.post(url, headers=headers, data=body)
-        if response.status_code == 200:
-            result = response.json()
-            if result["code"] == 200:
-                return result["data"]
-            else:
-                print(result["msg"])
-        else:
-            print(f"API请求失败，请检查网络重试: {response.status_code}")
+        # 加密
+        ecrypt_text = data.encode('utf8')
+        pub_key = RSA.importKey(publicKey_pj)
+        cipher = Cipher_pkcs1_v1_5.new(pub_key)
+        rsa_text = base64.b64encode(cipher.encrypt(ecrypt_text))
+        return rsa_text
 
     def credential_auth(self):
         rsa_pwd = self.rsa_encrypt(self.pwd)
