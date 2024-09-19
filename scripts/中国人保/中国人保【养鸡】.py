@@ -2,7 +2,7 @@
 中国人保-养鸡
 
 变量名: ZGRBYJ
-cron: 35 7,12,23 * * *
+cron: 0 7,12,23,0 * * *
 const $ = new Env("中国人保-养鸡");
 """
 import os
@@ -170,6 +170,11 @@ class RUN():
         # }
         url = 'https://m.picclife.cn/chicken-api/p/chicken/tashdailyfinish'
         response = requests.get(url, params=params, headers=self.mHeaders)
+        response_json = response.json()
+        if response_json['code'] == 200:
+            print(f'🐔✅签到成功')
+        else:
+            print(f'🐔❌签到失败')
 
     # 浏览保险产品
     def view_insurance_task(self):
@@ -297,16 +302,38 @@ class RUN():
             print(f'❌鸡信息失败')
             return False
 
+    def lottery(self):
+        message = ''
+        for i in range(3):
+            response = requests.get('https://m.picclife.cn/chicken-api/p/chicken/getdrawresult', headers=self.mHeaders)
+            response_json = response.json()
+            if response_json["code"] == 200:
+                awardName = response_json["result"]["lottery"]["awardName"]
+                msg = f'🐔第{i+1}次抽奖: {awardName}\n'
+                message += msg
+                print(msg)
+            time.sleep(1)
+        send("中国人保养鸡抽奖结果", message)
+
+
     def main(self):
         print(f"\n======== ▷ 云养小鸡 ◁ ========")
         if self.chicken_login():
+            # 抽奖
+            self.lottery()
+            time.sleep(random.randint(5, 10))
+
+            # 签到
+            self.daily_sign()
+            time.sleep(random.randint(5, 10))
+
             # 先把饲料领一遍
             self.chicken_collect_tall()
-            time.sleep(random.randint(10, 15))
+            time.sleep(random.randint(5, 10))
 
             # 做每日任务领饲料
             self.chicken_daily_task()
-            time.sleep(random.randint(10, 15))
+            time.sleep(random.randint(5, 10))
 
             # 喂鸡
             eggPer, foodCount, chickfoodStatus = self.get_egg_growth()
@@ -322,7 +349,7 @@ class RUN():
                         time.sleep(random.randint(10, 15))
                     elif foodCount < 180:
                         print(f'🐔喂鸡失败, 饲料不足 | 剩余饲料: {foodCount}g/需要饲料: 180g')
-            time.sleep(random.randint(10, 15))
+            time.sleep(random.randint(5, 10))
 
             # 卖鸡蛋
             self.chicken_sell_egg_all()

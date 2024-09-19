@@ -1,7 +1,7 @@
 /**
  * 好奇车生活
 
- * 变量名: hqcsh_data
+ * 变量名: Cheryfs
  * 变量格式：openId#accountId
  * 多账号用&分割
 
