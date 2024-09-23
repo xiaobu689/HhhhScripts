@@ -169,7 +169,7 @@ class RUN():
         #     'foodQuantity': '0',
         # }
         url = 'https://m.picclife.cn/chicken-api/p/chicken/tashdailyfinish'
-        response = requests.get(url, params=params, headers=self.mHeaders)
+        response = requests.post(url, params=params, headers=self.mHeaders)
         response_json = response.json()
         if response_json['code'] == 200:
             print(f'🐔✅签到成功')
